@@ -1,22 +1,21 @@
-const chatApi = 'https://chatbackenddev.versal.one'
+const chatApi = "https://chatbackenddev.versal.one";
 
 const company = window?.vcxWebChat;
 
-
-let webchat_id = localStorage.getItem("user_id");
-let user_id = webchat_id;
+let user_id = localStorage.getItem("user_id");
+let webchat_id = user_id;
 let conversation_id = localStorage.getItem("conversation_id");
 let user_token = localStorage.getItem("user_token");
 
-console.log(
-  webchat_id,
-  "       ",
-  user_id,
-  "       ",
-  conversation_id,
-  "       ",
-  user_token
-);
+// console.log(
+//   webchat_id,
+//   "       ",
+//   user_id,
+//   "       ",
+//   conversation_id,
+//   "       ",
+//   user_token
+// );
 
 const socket = io(`${chatApi}`);
 
@@ -45,14 +44,14 @@ async function fetchPreviousMessages() {
       }
     );
 
-    console.log(response);
+    // console.log(response);
 
     if (response.status === 200) {
       const messages = await response.json();
-      console.log(messages);
+      // console.log(messages);
       return messages?.message || []; // Return fetched messages
     } else {
-      console.log("Failed to fetch previous messages");
+      // console.log("Failed to fetch previous messages");
       return [];
     }
   } catch (error) {
@@ -65,68 +64,10 @@ async function fetchPreviousMessages() {
 // Define the function to render the form
 /************************/
 
-// function createForm(msgId, fields, chatBody) {
-//   // Create form container
-//   const formContainer = document.createElement("div");
-//   formContainer.style.cssText = `
-//     width: 100%;
-//     max-width: 70%;
-//     background-color: #f9fafb;
-//     padding: 16px;
-//     border-radius: 8px;
-//     box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.1);
-//   `;
-
-//   // Header and icon
-//   formContainer.innerHTML = `
-//     <div class="form-header" style="width: 100%; text-align: center; margin-bottom: 16px;">
-//       <div class="icon" style="background-color: #4ade80; color: #fff; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin: 0 auto 8px;">👤</div>
-//     </div>
-//     <p class="form-description" style="font-size: 0.9rem; color: #374151; margin-bottom: 16px; text-align: center;">Welcome to our LiveChat! Please fill the form and submit.</p>
-//   `;
-
-//   // Create the form
-//   const form = document.createElement("form");
-//   form.style.cssText = `width: 100%; display: flex; flex-direction: column; gap: 8px;`;
-
-//   fields.forEach((field) => {
-//     // Label and input
-//     form.innerHTML += `
-//       <div style="width: 100%; display:flex; flex-direction: column; margin-bottom: 12px;">
-//         <label for="${
-//           field.id
-//         }" style=" font-size: 0.85rem; color: #374151; font-weight: 500;">${field.label}
-//           <span style="color: #ef4444;">*</span></label>
-//         <div style="width: 100%; padding-right: 10px">
-//           <input
-//             type="${field.type}"
-//             id="${field.id}"
-//             name="${field.id}"
-//             placeholder="${field.placeholder}"
-//             value="${field.value || ""}"
-//             required="${field.required ? "true" : ""}"
-//             style="width: 95%; padding: 5px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 0.9rem;"
-//             onfocus="this.style.borderColor='#4ade80'; this.style.boxShadow='0 0 0 1px #4ade80'; this.style.outline='none';"
-//             onblur="this.style.borderColor='#d1d5db'; this.style.boxShadow='none';"
-//           />
-//         </div>
-//       </div>
-//     `;
-//   });
-
-//   // Submit Button
-//   form.innerHTML += `
-//     <button type="submit" style="background-color: #4ade80; color: white; padding: 10px 15px; border: none; border-radius: 4px; font-size: 0.9rem; font-weight: 500; cursor: pointer; margin-top: 8px;"
-//       onmouseover="this.style.backgroundColor='#22c55e';" onmouseout="this.style.backgroundColor='#4ade80';">Submit</button>
-//   `;
-
-//   formContainer.appendChild(form);
-//   chatBody.appendChild(formContainer);
-// }
 
 function createForm(msgId, content, chatBody) {
   // Create form container
-  const fields = content?.formfields
+  const fields = content?.formfields;
   const formContainer = document.createElement("div");
   formContainer.style.cssText = `
     width: 100%;
@@ -178,17 +119,16 @@ function createForm(msgId, content, chatBody) {
 
   // Submit Button
   // console.log("form status == ",content.formstatus)
-  if(content.formstatus===false){
-    form.innerHTML +=`
+  if (content.formstatus === false) {
+    form.innerHTML += `
     <button type="submit" style="background-color: #4ade80; color: white; padding: 10px 15px; border: none; border-radius: 4px; font-size: 0.9rem; font-weight: 500; cursor: pointer; margin-top: 8px;" 
       onmouseover="this.style.backgroundColor='#22c55e';" onmouseout="this.style.backgroundColor='#4ade80';">Submit</button>
-  `
-  }else{
-    form.innerHTML +=`
+  `;
+  } else {
+    form.innerHTML += `
     <button type="submit" disabled style="background-color: #4ade80; color: white; padding: 10px 15px; border: none; border-radius: 4px; font-size: 0.9rem; font-weight: 500; cursor: pointer; margin-top: 8px;">Submited</button>
-    `
+    `;
   }
-
 
   // Handle form submission
   form.onsubmit = async function (event) {
@@ -198,9 +138,9 @@ function createForm(msgId, content, chatBody) {
     const formData = {};
     fields.forEach((field) => {
       formData[field.id] = form.elements[field.id].value;
-      field.value = form.elements[field.id].value
+      field.value = form.elements[field.id].value;
     });
-    console.log(fields)
+    // console.log(fields);
 
     try {
       // Call the API
@@ -210,19 +150,19 @@ function createForm(msgId, content, chatBody) {
           conversation_id: conversation_id || "",
           userToken: user_token || "",
         },
-          message : {
-            type: "formdata",
-            data : {
-              formfields : fields,
-              form_sms_id : msgId, // mongo id(_id)
-              formstatus : true
-            }
+        message: {
+          type: "formdata",
+          data: {
+            formfields: fields,
+            form_sms_id: msgId, // mongo id(_id)
+            formstatus: true,
           },
-          toggle_status: "Human",
-        }
+        },
+        toggle_status: "Human",
+      };
 
-        console.log(payload)
-      
+      // console.log(payload);
+
       const response = await fetch(
         `${chatApi}/wc-webhook/recieve-webchat-message/${company?.uuid}`,
         {
@@ -251,7 +191,7 @@ function createForm(msgId, content, chatBody) {
           `;
         userMessage.innerText = "Form Submited";
         chatBody.appendChild(userMessage);
-        console.log("Response:", result);
+        // console.log("Response:", result);
       } else {
         alert("Failed to submit the form.");
       }
@@ -394,24 +334,11 @@ async function createChatWidget() {
             createForm(msg._id, msg.content?.data, chatBody);
           }
         }
-        // serverMessage.style = `
-        //   background-color: ${isUserMessage ? "#4ade80" : "#f1f1f1"};
-        //   color: ${isUserMessage ? "#fff" : "#333"};
-        //   padding: 10px;
-        //   border-radius: 10px;
-        //   max-width: 80%;
-        //   width: fit-content;
-        //   margin-bottom: 10px;
-        //   align-self: ${isUserMessage ? "flex-end" : "flex-start"};
-        //   text-align: ${isUserMessage ? "right" : "left"};
-        // `;
-        // serverMessage.innerText = msg?.content?.data?.body || msg?.content?.data?.body;
-        // chatBody.appendChild(serverMessage);
       } else {
         // console.log("inside else = ", msg?.content);
-       if(msg?.content?.type === "text"){
-        const userMessage = document.createElement("p");
-        userMessage.style = `
+        if (msg?.content?.type === "text") {
+          const userMessage = document.createElement("p");
+          userMessage.style = `
             background-color: #4ade80;
             color: #fff;
             padding: 10px;
@@ -423,11 +350,11 @@ async function createChatWidget() {
             align-self: flex-end;
             text-align: right;
           `;
-        userMessage.innerText = msg?.content?.data?.body;
-        chatBody.appendChild(userMessage);
-       }else if(msg?.content?.type === "formdata"){
-        const userMessage = document.createElement("p");
-        userMessage.style = `
+          userMessage.innerText = msg?.content?.data?.body;
+          chatBody.appendChild(userMessage);
+        } else if (msg?.content?.type === "formdata") {
+          const userMessage = document.createElement("p");
+          userMessage.style = `
             background-color: #4ade80;
             color: #fff;
             padding: 10px;
@@ -439,9 +366,9 @@ async function createChatWidget() {
             align-self: flex-end;
             text-align: right;
           `;
-        userMessage.innerText = "Form Submited";
-        chatBody.appendChild(userMessage);
-       }
+          userMessage.innerText = "Form Submited";
+          chatBody.appendChild(userMessage);
+        }
       }
     }
     chatBody.scrollTop = chatBody.scrollHeight;
@@ -487,7 +414,7 @@ async function createChatWidget() {
       try {
         let payload = {};
         if (webchat_id) {
-          console.log("inside if");
+          // console.log("inside if");
           payload = {
             conversation: {
               userId: user_id || "",
@@ -498,7 +425,7 @@ async function createChatWidget() {
             toggle_status: "Bot",
           };
         } else {
-          console.log("inside else");
+          // console.log("inside else");
           payload = {
             conversation: {
               userId: "",
@@ -510,7 +437,7 @@ async function createChatWidget() {
           };
         }
 
-        console.log(`The Payload sent is `, payload);
+        // console.log(`The Payload sent is `, payload);
 
         const response = await fetch(
           `${chatApi}/wc-webhook/recieve-webchat-message/${company?.uuid}`,
@@ -522,20 +449,32 @@ async function createChatWidget() {
             body: JSON.stringify(payload),
           }
         );
-        console.log(response);
+        // console.log(response);
         if (response.status === 200) {
           const result = await response.json();
-          console.log("Message sent successfully", result);
+          // console.log("Message sent successfully ==== ", result);
+          // console.log("Inside if === ", webchat_id);
           if (!webchat_id) {
-            console.log("Inside if", webchat_id);
-            user_id = result?.res?.user_id;
+            // console.log("*******************")
+            user_id = result?.data?.res?.user_id;
             webchat_id = user_id;
+            conversation_id = result?.data?.res?.conversation_id;
+            user_token = result?.data?.res?.user_token;
             localStorage.setItem("user_id", result?.data?.res?.user_id);
             localStorage.setItem(
               "conversation_id",
               result?.data?.res?.conversation_id
             );
             localStorage.setItem("user_token", result?.data?.res?.user_token);
+            console.log(
+              webchat_id,
+              " @@ ",
+              user_id,
+              " @@ ",
+              conversation_id,
+              " @@ ",
+              user_token
+            );
             socket.emit("subscribe", webchat_id);
           }
         } else {
@@ -549,8 +488,9 @@ async function createChatWidget() {
 
   // Example of listening to incoming messages from the server
   socket.on("sending message", (msg) => {
+    console.log("Hello world")
     console.log(msg);
-    const isUserMessage = msg.senderId === localStorage.getItem("user_id");
+    const isUserMessage = msg.senderId === user_id
     if (msg?.content?.type === "text") {
       const serverMessage = document.createElement("p");
 
