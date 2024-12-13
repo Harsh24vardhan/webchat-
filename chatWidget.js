@@ -6,6 +6,7 @@ let user_id = localStorage.getItem("user_id");
 let webchat_id = user_id;
 let conversation_id = localStorage.getItem("conversation_id");
 let user_token = localStorage.getItem("user_token");
+let chatStatus = "Bot"
 
 // console.log(
 //   webchat_id,
@@ -20,10 +21,10 @@ let user_token = localStorage.getItem("user_token");
 const socket = io(`${chatApi}`);
 
 // Connect to the Socket.IO server
-if (webchat_id) {
+if (user_id) {
   socket.on("connect", () => {
     console.log("Connected to the server");
-    socket.emit("subscribe", webchat_id); // Joining the 'plugin' room
+    socket.emit("subscribe", user_id); // Joining the 'plugin' room
   });
 }
 
@@ -33,6 +34,7 @@ socket.on("disconnect", () => {
 
 async function fetchPreviousMessages() {
   try {
+    // const res = await fetch(`${chatApi}/webhook/gettoggle/${company?.uuid}?id=675ae547d106846c5a4cf32e&displayPhoneNumber=918310245932&waId=user_01JEXGZ5C5ZM69VTGYSZS9Z3CJ&epochToken=1734010589&source=webchat`)
     // /8082f57c-1d2c-4b0e-aa18-86dc95222137
     const response = await fetch(
       `${chatApi}/chat/get-botpress-messages/${webchat_id}/${company?.uuid}`,
@@ -48,7 +50,7 @@ async function fetchPreviousMessages() {
 
     if (response.status === 200) {
       const messages = await response.json();
-      // console.log(messages);
+      console.log(messages);
       return messages?.message || []; // Return fetched messages
     } else {
       // console.log("Failed to fetch previous messages");
@@ -235,21 +237,24 @@ async function createChatWidget() {
       bottom: 80px;
       right: 20px;
       width: 350px;
-      height: 500px;
+      height: 80%;
       background-color: #fff;
       border: 1px solid #ddd;
       border-radius: 10px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-      display: none;
+      display: flex;
       flex-direction: column;
       z-index: 1000;
       overflow: hidden;
     "
   >
-    <div style="display:flex; justify-content: space-between; align-items: center; background-color: #18813e; color: #fff; padding: 15px; border-top-left-radius: 10px; border-top-right-radius: 10px;">
-      <span style="font-weight: bold;">
-      ${company?.companyName}
-      </span>
+    <div style="height: 50px; display:flex; justify-content: space-between; align-items: center; background-color: #18813e; color: #fff; padding-left: 15px; padding-right: 15px; border-top-left-radius: 10px; border-top-right-radius: 10px;">
+      <div style="height: 70%; display: flex;  align-items: center; gap: 10px">
+        <img src="${company?.logo}" style="height: 100%; aspect-ratio: 1/1; border-radius: 50%;"/>
+        <span style="font-weight: bold;">
+        ${company?.companyName}
+        </span>
+      </div>
       <span id='close-chat' style="cursor: pointer;">
         <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 15 15"><path fill="white" d="M3.64 2.27L7.5 6.13l3.84-3.84A.92.92 0 0 1 12 2a1 1 0 0 1 1 1a.9.9 0 0 1-.27.66L8.84 7.5l3.89 3.89A.9.9 0 0 1 13 12a1 1 0 0 1-1 1a.92.92 0 0 1-.69-.27L7.5 8.87l-3.85 3.85A.92.92 0 0 1 3 13a1 1 0 0 1-1-1a.9.9 0 0 1 .27-.66L6.16 7.5L2.27 3.61A.9.9 0 0 1 2 3a1 1 0 0 1 1-1c.24.003.47.1.64.27"/></svg>
       </span>
@@ -276,15 +281,18 @@ async function createChatWidget() {
           background-color: #4ade80;
           color: #fff;
           border: none;
-          padding: 10px 15px;
+          padding: 3px 10px;
           border-radius: 5px;
           margin-left: 10px;
           cursor: pointer;
+          display : flex;
+          justify-content: center;
+          align-items: center;
         "
         onMouseOver="this.style.backgroundColor='#22c55e'"
         onMouseOut="this.style.backgroundColor='#4ade80'"
       >
-        Send
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="m3.4 20.4l17.45-7.48a1 1 0 0 0 0-1.84L3.4 3.6a.993.993 0 0 0-1.39.91L2 9.12c0 .5.37.93.87.99L17 12L2.87 13.88c-.5.07-.87.5-.87 1l.01 4.61c0 .71.73 1.2 1.39.91"/></svg>
       </button>
     </div>
   </div>
@@ -298,6 +306,8 @@ async function createChatWidget() {
   const sendButton = document.getElementById("send-button");
   const chatInput = document.getElementById("chat-input");
   const chatBody = document.getElementById("chat-body");
+
+
 
   // Load previous messages and append them to chat body
   async function loadPreviousMessages() {
@@ -422,7 +432,7 @@ async function createChatWidget() {
               userToken: user_token || "",
             },
             message,
-            toggle_status: "Bot",
+            toggle_status: chatStatus,
           };
         } else {
           // console.log("inside else");
@@ -433,7 +443,7 @@ async function createChatWidget() {
               userToken: "",
             },
             message,
-            toggle_status: "Bot",
+            toggle_status: chatStatus,
           };
         }
 
@@ -452,9 +462,9 @@ async function createChatWidget() {
         // console.log(response);
         if (response.status === 200) {
           const result = await response.json();
-          // console.log("Message sent successfully ==== ", result);
+          console.log("Message sent successfully ==== ", result);
           // console.log("Inside if === ", webchat_id);
-          if (!webchat_id) {
+          if (!user_id) {
             // console.log("*******************")
             user_id = result?.data?.res?.user_id;
             webchat_id = user_id;
@@ -475,7 +485,7 @@ async function createChatWidget() {
               " @@ ",
               user_token
             );
-            socket.emit("subscribe", webchat_id);
+            socket.emit("subscribe", user_id);
           }
         } else {
           console.log("Failed to send message");
@@ -518,6 +528,10 @@ async function createChatWidget() {
     }
     chatBody.scrollTop = chatBody.scrollHeight;
   });
+  socket.on('toggle update',(data)=>{
+    console.log(data)
+    chatStatus = data === 'Human'?'Human':"Bot"
+  })
 }
 
 // Initialize the widget on page load
