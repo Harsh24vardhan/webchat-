@@ -225,7 +225,7 @@ async function createChatWidget() {
       align-items: center;
       cursor: pointer;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-      z-index: 1000;
+      z-index: 2000;
     "
   >
     💬
@@ -242,9 +242,9 @@ async function createChatWidget() {
       border: 1px solid #ddd;
       border-radius: 10px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-      display: flex;
+      display: none;
       flex-direction: column;
-      z-index: 1000;
+      z-index: 2000;
       overflow: hidden;
     "
   >
