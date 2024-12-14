@@ -12,7 +12,7 @@
   // let chatStatus = "Bot"
   const storedUserDetails = JSON.parse(localStorage.getItem("webchat")) || {};
   console.log(storedUserDetails)
-  let userToken = storedUserDetails.userId || "";
+  let userToken = storedUserDetails.userToken || "";
   let conversationId = storedUserDetails.conversationId || "";
   let userId = storedUserDetails.userId || "";
   let webchatId = userId
