@@ -109,7 +109,7 @@
   });
 
 
-  function createForm(msgId, content, chatBody) {
+  function createForm(msgId, content, chatMessages) {
     // Create form container
     const fields = content?.formfields;
     const formContainer = document.createElement("div");
