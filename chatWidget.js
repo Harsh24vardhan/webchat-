@@ -1,6 +1,4 @@
 (function () {
-  console.log("Enhanced Chat Widget Initializing...");
-
   // Retrieve existing user data from local storage
 
   const company = window?.vcxWebChat;
@@ -11,25 +9,25 @@
   // let user_token = localStorage.getItem("user_token");
   // let chatStatus = "Bot"
   const storedUserDetails = JSON.parse(localStorage.getItem("webchat")) || {};
-  console.log(storedUserDetails)
+  // console.log(storedUserDetails)
   let userToken = storedUserDetails.userToken || "";
   let conversationId = storedUserDetails.conversationId || "";
   let userId = storedUserDetails.userId || "";
-  let webchatId = userId
+  let webchatId = userId;
   let chatStatus = "Bot";
   const chatApi = "https://chatbackenddev.versal.one";
   // const company = window?.vcxWebChat;
 
-  console.log("details =  ",
-    webchatId,
-    "       ",
-    userId,
-    "       ",
-    conversationId,
-    "       ",
-    userToken
-  );
-
+  // console.log(
+  //   "details =  ",
+  //   webchatId,
+  //   "       ",
+  //   userId,
+  //   "       ",
+  //   conversationId,
+  //   "       ",
+  //   userToken
+  // );
 
   // Socket.io connection
   const socket = io(chatApi);
@@ -101,13 +99,12 @@
   chatBubble.addEventListener("click", () => {
     chatWidget.style.display =
       chatWidget.style.display === "none" ? "block" : "none";
-    chatMessages.scrollTop = chatMessages.scrollHeight
+    chatMessages.scrollTop = chatMessages.scrollHeight;
   });
 
   closeButton.addEventListener("click", () => {
     chatWidget.style.display = "none";
   });
-
 
   function createForm(msgId, content, chatMessages) {
     // Create form container
@@ -138,9 +135,11 @@
     fields.forEach((field) => {
       form.innerHTML += `
         <div style="width: 100%; display:flex; flex-direction: column; margin-bottom: 12px;">
-          <label for="${field.id
-        }" style="font-size: 0.85rem; color: #374151; font-weight: 500;">${field.label
-        }
+          <label for="${
+            field.id
+          }" style="font-size: 0.85rem; color: #374151; font-weight: 500;">${
+        field.label
+      }
             <span style="color: #ef4444;">*</span></label>
           <div style="width: 100%; padding-right: 10px">
             <input
@@ -218,8 +217,8 @@
 
         // Check if the response is successful
         if (response.ok) {
-          const result = await response.json();
-          // alert("Form submitted successfully!");
+          // const result = await response.json();
+          // console.log("Form submitted successfully!", result);
           const userMessage = document.createElement("p");
           userMessage.style = `
               background-color: #4ade80;
@@ -235,6 +234,7 @@
             `;
           userMessage.innerText = "Form Submited";
           chatMessages.appendChild(userMessage);
+          chatMessages.scrollTop = chatMessages.scrollHeight;
           // console.log("Response:", result);
         } else {
           alert("Failed to submit the form.");
@@ -242,8 +242,6 @@
       } catch (error) {
         console.error("Error:", error);
         alert("An error occurred. Please try again.");
-      } finally {
-        chatMessages.scrollTop = chatMessages.scrollHeight
       }
     };
 
@@ -254,16 +252,23 @@
   // Load previous messages
   async function loadPreviousMessages() {
     try {
-      console.log("user id = ", userId)
-      // const res = await fetch(`${chatApi}/webhook/gettoggle/${company?.uuid}?id=675ae547d106846c5a4cf32e&displayPhoneNumber=918310245932&waId=user_01JEXGZ5C5ZM69VTGYSZS9Z3CJ&epochToken=1734010589&source=webchat`)
+      // console.log("user id = ", userId);
+      const res = await fetch(
+        `${chatApi}/wc-webhook/get-wc-toggle/${userId}/${company?.uuid}`
+      );
+      if (res.status === 200) {
+        const data = await res.json();
+        // console.log(data);
+        chatStatus = data?.toggleStatus === "Human" ? "Human" : "Bot";
+      }
 
       const response = await fetch(
         `${chatApi}/chat/get-botpress-messages/${userId}/${company?.uuid}`
       );
-      console.log("response previous message == ", response)
+      // console.log("response previous message == ", response);
       if (response.ok) {
         const data = await response.json();
-        console.log(data)
+        // console.log(data);
         data.message?.forEach((msg) => {
           // const serverMessage = document.createElement("p");
           const isUserMessage = msg.senderId === webchatId;
@@ -274,30 +279,59 @@
               const serverMessage = document.createElement("p");
 
               serverMessage.style = `
-                background-color: ${isUserMessage ? "#4ade80" : "#f1f1f1"};
-                color: ${isUserMessage ? "#fff" : "#333"};
+                background-color: #f1f1f1;
+                color: #333;
                 padding: 10px;
                 border-radius: 10px;
                 max-width: 80%;
                 width: fit-content;
                 margin-bottom: 10px;
-                align-self: ${isUserMessage ? "flex-end" : "flex-start"};
-                text-align: ${isUserMessage ? "right" : "left"};
+                align-self: flex-start;
+                text-align: left;
               `;
-
               serverMessage.innerText =
                 msg.content?.data?.body || msg.content?.data?.text;
               chatMessages.appendChild(serverMessage);
-              // chatBody.appendChild(serverMessage);
             } else if (msg?.content?.type === "form") {
               if (msg.content?.data?.formfields) {
                 // Call the function to render the form
-                console.log("id == ", msg._id, msg.content?.data, chatMessages)
+                // console.log("id == ", msg._id, msg.content?.data);
                 createForm(msg._id, msg.content?.data, chatMessages);
               }
+            } else if (msg?.content?.type === "choice") {
+              const serverMessage = document.createElement("ul");
+              serverMessage.style = `
+                background-color: #f1f1f1;
+                color: #333;
+                padding: 10px;
+                border-radius: 10px;
+                max-width: 80%;
+                width: fit-content;
+                margin-bottom: 10px;
+                align-self: flex-start;
+                text-align: left;
+              `;
+
+              serverMessage.innerHTML =
+                `<b>${msg?.content?.data?.text}</b>` +
+                "\n" +
+                msg?.content?.data?.options
+                  ?.map(
+                    (option) => `
+                    <li style="list-style: none; padding-left: 10px;">
+                      <label style="display: flex; align-items: center;">
+                        <input type="radio" readonly />
+                        &nbsp;
+                        ${option.label}
+                      </label>
+                    </li>
+                  `
+                  )
+                  .join(""); // Join the array into a single string
+
+              chatMessages.appendChild(serverMessage);
             }
           } else {
-            // console.log("inside else = ", msg?.content);
             if (msg?.content?.type === "text") {
               const userMessage = document.createElement("p");
               userMessage.style = `
@@ -334,107 +368,13 @@
               // chatBody.appendChild(userMessage);
             }
           }
-        })
-        // data.message?.forEach((msg) => {
-        //   const messageElement = document.createElement("p");
-        //   messageElement.style.padding = "10px";
-        //   messageElement.style.borderRadius = "5px";
-        //   if (msg.senderId === userId) {
-        //     console.log("inside if")
-        //     messageElement.style.marginLeft = '50px'
-        //   } else {
-        //     console.log("inside else")
-        //     messageElement.style.marginRight = '50px'
-        //   }
-        //   messageElement.style.backgroundColor =
-        //     msg.senderId === userId ? "#2DA8FA" : "#f0f0f0";
-        //   messageElement.style.color =
-        //     msg.senderId === userId ? "#fff" : "#000";
-        //   messageElement.textContent =
-        //     msg.content?.data?.body || msg.content?.data?.text;
-        //   chatMessages.appendChild(messageElement);
-        // });
-        chatMessages.scrollTop = chatMessages.scrollHeight
+        });
+        chatMessages.scrollTop = chatMessages.scrollHeight;
       }
     } catch (error) {
       console.error("Error loading previous messages: ", error);
     }
   }
-
-  // async function loadPreviousMessages() {
-  //   const previousMessages = await fetchPreviousMessages();
-  //   // console.log("previousMessages", previousMessages);
-  //   for (let msg of previousMessages) {
-  //     const serverMessage = document.createElement("p");
-  //     const isUserMessage = msg.senderId === webchatId;
-
-  //     if (!isUserMessage) {
-  //       // console.log("inside if = ", msg?.content?.data?.body);
-  //       if (msg?.content?.type === "text") {
-  //         const serverMessage = document.createElement("p");
-
-  //         serverMessage.style = `
-  //             background-color: ${isUserMessage ? "#4ade80" : "#f1f1f1"};
-  //             color: ${isUserMessage ? "#fff" : "#333"};
-  //             padding: 10px;
-  //             border-radius: 10px;
-  //             max-width: 80%;
-  //             width: fit-content;
-  //             margin-bottom: 10px;
-  //             align-self: ${isUserMessage ? "flex-end" : "flex-start"};
-  //             text-align: ${isUserMessage ? "right" : "left"};
-  //           `;
-
-  //         serverMessage.innerText =
-  //           msg.content?.data?.body || msg.content?.data?.text;
-  //         chatMessages.appendChild(serverMessage);
-  //       } else if (msg?.content?.type === "form") {
-  //         if (msg.content?.data?.formfields) {
-  //           // Call the function to render the form
-  //           // console.log("id == ",msg._id)
-  //           createForm(msg._id, msg.content?.data, chatMessages);
-  //         }
-  //       }
-  //     } else {
-  //       // console.log("inside else = ", msg?.content);
-  //       if (msg?.content?.type === "text") {
-  //         const userMessage = document.createElement("p");
-  //         userMessage.style = `
-  //             background-color: #4ade80;
-  //             color: #fff;
-  //             padding: 10px;
-  //             border-radius: 10px;
-  //             width: fit-content;
-  //             max-width: 80%;
-  //             margin-bottom: 10px;
-  //             margin-left: auto;
-  //             align-self: flex-end;
-  //             text-align: right;
-  //           `;
-  //         userMessage.innerText = msg?.content?.data?.body;
-  //         chatMessages.appendChild(userMessage);
-  //       } else if (msg?.content?.type === "formdata") {
-  //         const userMessage = document.createElement("p");
-  //         userMessage.style = `
-  //             background-color: #4ade80;
-  //             color: #fff;
-  //             padding: 10px;
-  //             border-radius: 10px;
-  //             width: fit-content;
-  //             max-width: 80%;
-  //             margin-bottom: 10px;
-  //             margin-left: auto;
-  //             align-self: flex-end;
-  //             text-align: right;
-  //           `;
-  //         userMessage.innerText = "Form Submited";
-  //         chatMessages.appendChild(userMessage);
-  //       }
-  //     }
-  //   }
-  //   chatMessages.scrollTop = chatMessages.scrollHeight;
-  // }
-
 
   loadPreviousMessages();
 
@@ -444,18 +384,27 @@
     if (!message) return;
 
     const userMessage = document.createElement("p");
-    userMessage.style.padding = "10px";
-    userMessage.style.backgroundColor = "#2DA8FA";
-    userMessage.style.color = "#fff";
-    userMessage.style.borderRadius = "5px";
-    userMessage.style.margin = "5px 0 5px auto";
+    userMessage.style = `
+      background-color: #2DA8FA;
+      color: #fff;
+      padding: 10px;
+      width: fit-content;
+      max-width: 80%;
+      margin-bottom: 10px;
+      margin-left: auto;
+      align-self: flex-end;
+      text-align: right;
+      border-radius: 10px;
+    `;
+
     userMessage.textContent = message;
     chatMessages.appendChild(userMessage);
     chatInput.value = "";
+    chatMessages.scrollTop = chatMessages.scrollHeight;
 
     try {
       let payload = {};
-      if (webchatId && webchatId !== '') {
+      if (webchatId && webchatId !== "") {
         // console.log("inside if");
         payload = {
           conversation: {
@@ -483,7 +432,7 @@
         };
       }
 
-      console.log(`The Payload sent is `, payload);
+      // console.log(`The Payload sent is `, payload);
 
       const response = await fetch(
         `${chatApi}/wc-webhook/recieve-webchat-message/${company?.uuid}`,
@@ -498,7 +447,7 @@
       // console.log(response);
       if (response.status === 200) {
         const result = await response.json();
-        console.log("Message sent successfully ==== ", result);
+        // console.log("Message sent successfully ==== ", result);
         // console.log("Inside if === ", webchat_id);
         if (!userId) {
           // console.log("*******************")
@@ -507,18 +456,24 @@
           webchatId = userId;
           conversationId = result?.data?.res?.conversation_id;
           userToken = result?.data?.res?.user_token;
-          localStorage.setItem("webchat", JSON.stringify({
-            userId, webchatId, conversationId, userToken
-          }))
-          console.log(
-            webchatId,
-            " @@ ",
-            userId,
-            " @@ ",
-            conversationId,
-            " @@ ",
-            userToken
+          localStorage.setItem(
+            "webchat",
+            JSON.stringify({
+              userId,
+              webchatId,
+              conversationId,
+              userToken,
+            })
           );
+          // console.log(
+          //   webchatId,
+          //   " @@ ",
+          //   userId,
+          //   " @@ ",
+          //   conversationId,
+          //   " @@ ",
+          //   userToken
+          // );
           socket.emit("subscribe", userId);
         }
       } else {
@@ -530,24 +485,69 @@
   });
 
   socket.on("sending message", (msg) => {
-    const messageElement = document.createElement("p");
-    messageElement.style.padding = "10px";
-    messageElement.style.backgroundColor = "#f0f0f0";
-    messageElement.style.borderRadius = "5px";
-    messageElement.style.margin = "5px 0";
-    messageElement.textContent =
-      msg.content?.data?.body || msg.content?.data?.text;
-    chatMessages.appendChild(messageElement);
+    if (msg?.content?.type === "text") {
+      const serverMessage = document.createElement("p");
+
+      serverMessage.style = `
+        background-color: #f1f1f1;
+        color: #333;
+        padding: 10px;
+        border-radius: 10px;
+        max-width: 80%;
+        width: fit-content;
+        margin-bottom: 10px;
+        align-self: flex-start;
+        text-align: left;
+      `;
+      serverMessage.innerText =
+        msg.content?.data?.body || msg.content?.data?.text;
+      chatMessages.appendChild(serverMessage);
+    } else if (msg?.content?.type === "form") {
+      if (msg.content?.data?.formfields) {
+        // Call the function to render the form
+        // console.log("id == ", msg._id, msg.content?.data, chatMessages);
+        createForm(msg._id, msg.content?.data, chatMessages);
+      }
+    } else if (msg?.content?.type === "choice") {
+      const serverMessage = document.createElement("ul");
+      serverMessage.style = `
+        background-color: #f1f1f1;
+        color: #333;
+        padding: 10px;
+        border-radius: 10px;
+        max-width: 80%;
+        width: fit-content;
+        margin-bottom: 10px;
+        align-self: flex-start;
+        text-align: left;
+      `;
+
+      serverMessage.innerHTML =
+        `<b>${msg?.content?.data?.text}</b>` +
+        "\n" +
+        msg?.content?.data?.options
+          ?.map(
+            (option) => `
+            <li style="list-style: none; padding-left: 10px;">
+              <label style="display: flex; align-items: center;">
+                <input type="radio" readonly />
+                &nbsp;
+                ${option.label}
+              </label>
+            </li>
+          `
+          )
+          .join(""); // Join the array into a single string
+
+      chatMessages.appendChild(serverMessage);
+    }
   });
 
-  socket.on('toggle update', (data) => {
-    console.log(data)
-    chatStatus = data === 'Human' ? 'Human' : "Bot"
-  })
-
+  socket.on("toggle update", (data) => {
+    // console.log(data);
+    chatStatus = data === "Human" ? "Human" : "Bot";
+  });
 })();
-
-
 
 /***************************************************************************/
 /********************************* Old Code ********************************/
