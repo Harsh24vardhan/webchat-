@@ -3,11 +3,6 @@
 
   const company = window?.vcxWebChat;
 
-  // let user_id = localStorage.getItem("user_id");
-  // let webchat_id = user_id;
-  // let conversation_id = localStorage.getItem("conversation_id");
-  // let user_token = localStorage.getItem("user_token");
-  // let chatStatus = "Bot"
   const storedUserDetails = JSON.parse(localStorage.getItem("webchat")) || {};
   // console.log(storedUserDetails)
   let userToken = storedUserDetails.userToken || "";
@@ -261,7 +256,7 @@
         // console.log(data);
         chatStatus = data?.toggleStatus === "Human" ? "Human" : "Bot";
       }
-
+      // console.log("/*********///", userId);
       const response = await fetch(
         `${chatApi}/chat/get-botpress-messages/${userId}/${company?.uuid}`
       );
@@ -413,9 +408,6 @@
             userToken: userToken || "",
           },
           message,
-          toggle_status: chatStatus,
-          clientId: company?.uuid,
-          webhookId: company?.clientId,
         };
       } else {
         // console.log("inside else");
@@ -426,12 +418,16 @@
             userToken: "",
           },
           message,
-          toggle_status: chatStatus,
-          clientId: company?.uuid,
-          webhookId: company?.clientId,
         };
       }
 
+      if (company?.clientId && company?.clientId !== "") {
+        payload.toggle_status = chatStatus;
+        payload.clientId = company?.uuid;
+        payload.webhookId = company?.clientId;
+      } else {
+        payload.toggle_status = "Human";
+      }
       // console.log(`The Payload sent is `, payload);
 
       const response = await fetch(
@@ -447,10 +443,10 @@
       // console.log(response);
       if (response.status === 200) {
         const result = await response.json();
-        // console.log("Message sent successfully ==== ", result);
+        console.log("Message sent successfully ==== ", result);
         // console.log("Inside if === ", webchat_id);
         if (!userId) {
-          // console.log("*******************")
+          // console.log("*******************");
 
           userId = result?.data?.res?.user_id;
           webchatId = userId;
@@ -485,6 +481,7 @@
   });
 
   socket.on("sending message", (msg) => {
+    // console.log(msg);
     if (msg?.content?.type === "text") {
       const serverMessage = document.createElement("p");
 
