@@ -1,0 +1,1831 @@
+ <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Advanced Chat UI Customizer Pro</title>
+            <style>
+                * {
+                    margin: 0;
+                    padding: 0;
+                    box-sizing: border-box;
+                }
+
+                body {
+                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+                    display: flex;
+                    height: 100vh;
+                    overflow: hidden;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                }
+
+                /* Top Navigation Bar */
+                .top-nav {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    height: 60px;
+                    background: rgba(255, 255, 255, 0.98);
+                    backdrop-filter: blur(10px);
+                    border-bottom: 1px solid #e5e7eb;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    padding: 0 24px;
+                    z-index: 1000;
+                    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+                }
+
+                .nav-logo {
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    font-size: 20px;
+                    font-weight: 700;
+                    color: #1f2937;
+                }
+
+                .nav-logo span {
+                    font-size: 28px;
+                }
+
+                .nav-actions {
+                    display: flex;
+                    gap: 12px;
+                }
+
+                .nav-btn {
+                    padding: 10px 20px;
+                    border: none;
+                    border-radius: 8px;
+                    font-size: 14px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                }
+
+                .nav-btn-primary {
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    color: white;
+                    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+                }
+
+                .nav-btn-primary:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+                }
+
+                .nav-btn-secondary {
+                    background: white;
+                    color: #374151;
+                    border: 1px solid #e5e7eb;
+                }
+
+                .nav-btn-secondary:hover {
+                    background: #f9fafb;
+                }
+
+                /* Main Container */
+                .main-container {
+                    display: flex;
+                    width: 100%;
+                    margin-top: 60px;
+                    height: calc(100vh - 60px);
+                }
+
+                /* Sidebar */
+                .sidebar {
+                    width: 380px;
+                    background: white;
+                    border-right: 1px solid #e5e7eb;
+                    overflow-y: auto;
+                    padding: 24px;
+                    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+                }
+
+                .sidebar-tabs {
+                    display: flex;
+                    gap: 8px;
+                    margin-bottom: 24px;
+                    background: #f3f4f6;
+                    padding: 4px;
+                    border-radius: 10px;
+                }
+
+                .tab-btn {
+                    flex: 1;
+                    padding: 10px 16px;
+                    border: none;
+                    border-radius: 8px;
+                    background: transparent;
+                    color: #6b7280;
+                    font-weight: 600;
+                    font-size: 13px;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                }
+
+                .tab-btn.active {
+                    background: white;
+                    color: #667eea;
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                }
+
+                .tab-content {
+                    display: none;
+                }
+
+                .tab-content.active {
+                    display: block;
+                }
+
+                /* Presets Section */
+                .presets-grid {
+                    display: grid;
+                    grid-template-columns: repeat(2, 1fr);
+                    gap: 12px;
+                    margin-bottom: 24px;
+                }
+
+                .preset-card {
+                    padding: 16px;
+                    border: 2px solid #e5e7eb;
+                    border-radius: 12px;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                    text-align: center;
+                }
+
+                .preset-card:hover {
+                    border-color: #667eea;
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+                }
+
+                .preset-card.active {
+                    border-color: #667eea;
+                    background: #f0f4ff;
+                }
+
+                .preset-preview {
+                    display: flex;
+                    gap: 6px;
+                    justify-content: center;
+                    margin-bottom: 8px;
+                }
+
+                .preset-color {
+                    width: 24px;
+                    height: 24px;
+                    border-radius: 6px;
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                }
+
+                .preset-name {
+                    font-size: 13px;
+                    font-weight: 600;
+                    color: #374151;
+                }
+
+                /* Controls Section */
+                .controls-section {
+                    margin-bottom: 28px;
+                }
+
+                .section-header {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    margin-bottom: 16px;
+                }
+
+                .section-title {
+                    font-size: 15px;
+                    font-weight: 700;
+                    color: #1f2937;
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                }
+
+                .section-toggle {
+                    font-size: 12px;
+                    color: #667eea;
+                    cursor: pointer;
+                    font-weight: 600;
+                }
+
+                .control-group {
+                    margin-bottom: 20px;
+                    padding: 16px;
+                    background: #f9fafb;
+                    border-radius: 10px;
+                    border: 1px solid #e5e7eb;
+                }
+
+                .control-label {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    font-size: 13px;
+                    font-weight: 600;
+                    color: #374151;
+                    margin-bottom: 10px;
+                }
+
+                .control-label-info {
+                    font-size: 11px;
+                    color: #9ca3af;
+                    font-weight: 400;
+                }
+
+                .color-input-wrapper {
+                    display: flex;
+                    gap: 10px;
+                    align-items: center;
+                }
+
+                .color-input-wrapper input[type="color"] {
+                    width: 50px;
+                    height: 50px;
+                    border: 2px solid #e5e7eb;
+                    border-radius: 10px;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                }
+
+                .color-input-wrapper input[type="color"]:hover {
+                    border-color: #667eea;
+                    transform: scale(1.05);
+                }
+
+                .color-input-wrapper input[type="text"] {
+                    flex: 1;
+                    padding: 12px 14px;
+                    border: 1px solid #e5e7eb;
+                    border-radius: 8px;
+                    font-size: 13px;
+                    font-family: 'Courier New', monospace;
+                    font-weight: 600;
+                    transition: all 0.2s ease;
+                }
+
+                .color-input-wrapper input[type="text"]:focus {
+                    outline: none;
+                    border-color: #667eea;
+                    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+                }
+
+                .gradient-inputs {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 12px;
+                    margin-top: 10px;
+                }
+
+                .gradient-color {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 8px;
+                }
+
+                .gradient-color span {
+                    font-size: 11px;
+                    color: #6b7280;
+                    font-weight: 600;
+                    text-transform: uppercase;
+                }
+
+                .gradient-angle {
+                    margin-top: 12px;
+                }
+
+                input[type="range"] {
+                    width: 100%;
+                    height: 8px;
+                    border-radius: 4px;
+                    background: linear-gradient(to right, #e5e7eb 0%, #667eea 50%, #e5e7eb 100%);
+                    outline: none;
+                    -webkit-appearance: none;
+                    margin: 8px 0;
+                }
+
+                input[type="range"]::-webkit-slider-thumb {
+                    -webkit-appearance: none;
+                    width: 20px;
+                    height: 20px;
+                    border-radius: 50%;
+                    background: white;
+                    border: 3px solid #667eea;
+                    cursor: pointer;
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+                    transition: all 0.2s ease;
+                }
+
+                input[type="range"]::-webkit-slider-thumb:hover {
+                    transform: scale(1.2);
+                    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+                }
+
+                .range-label {
+                    display: flex;
+                    justify-content: space-between;
+                    font-size: 12px;
+                    color: #6b7280;
+                    margin-top: 4px;
+                }
+
+                .range-value {
+                    font-weight: 700;
+                    color: #667eea;
+                }
+
+                select {
+                    width: 100%;
+                    padding: 12px;
+                    border: 1px solid #e5e7eb;
+                    border-radius: 8px;
+                    font-size: 13px;
+                    background: white;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                }
+
+                select:focus {
+                    outline: none;
+                    border-color: #667eea;
+                    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+                }
+
+                /* Preview Container */
+                .preview-container {
+                    flex: 1;
+                    display: flex;
+                    flex-direction: column;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    overflow: hidden;
+                }
+
+                .preview-toolbar {
+                    background: rgba(255, 255, 255, 0.95);
+                    backdrop-filter: blur(10px);
+                    padding: 16px 24px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+                }
+
+                .preview-modes {
+                    display: flex;
+                    gap: 8px;
+                    background: #f3f4f6;
+                    padding: 4px;
+                    border-radius: 8px;
+                }
+
+                .mode-btn {
+                    padding: 8px 16px;
+                    border: none;
+                    border-radius: 6px;
+                    background: transparent;
+                    color: #6b7280;
+                    font-size: 13px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                }
+
+                .mode-btn.active {
+                    background: white;
+                    color: #667eea;
+                    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+                }
+
+                .preview-zoom {
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                }
+
+                .zoom-btn {
+                    width: 32px;
+                    height: 32px;
+                    border: 1px solid #e5e7eb;
+                    border-radius: 6px;
+                    background: white;
+                    color: #374151;
+                    font-size: 16px;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+
+                .zoom-btn:hover {
+                    background: #f9fafb;
+                    border-color: #667eea;
+                }
+
+                .zoom-level {
+                    font-size: 13px;
+                    font-weight: 600;
+                    color: #374151;
+                    min-width: 50px;
+                    text-align: center;
+                }
+
+                .preview-frame-container {
+                    flex: 1;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 40px;
+                    overflow: auto;
+                    position: relative;
+                }
+
+                .preview-frame {
+                    background: white;
+                    border-radius: 16px;
+                    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.25);
+                    width: 100%;
+                    max-width: 420px;
+                    height: 600px;
+                    overflow: hidden;
+                    position: relative;
+                    transition: transform 0.3s ease;
+                }
+
+                .preview-frame.mobile {
+                    max-width: 375px;
+                    height: 667px;
+                }
+
+                .preview-frame.desktop {
+                    max-width: 1200px;
+                    width: 95%;
+                    height: 680px;
+                    display: flex;
+                    flex-direction: row;
+                }
+
+                /* Desktop Sidebar simulation */
+                .desktop-sidebar {
+                    width: 320px;
+                    background: linear-gradient(180deg, #6B7AA1 0%, #8897B8 100%);
+                    display: none;
+                    flex-direction: column;
+                    flex-shrink: 0;
+                    border-right: 1px solid rgba(255, 255, 255, 0.1);
+                    padding: 20px;
+                    position: relative;
+                }
+
+                .preview-frame.desktop .desktop-sidebar {
+                    display: flex;
+                }
+
+                .preview-frame.widget {
+                    max-width: 420px;
+                    height: 600px;
+                }
+
+                .preview-frame.desktop .chat-messages {
+                    height: calc(680px - 100px - 85px - 40px);
+                }
+
+                .desktop-sidebar-header {
+                    color: white;
+                    font-size: 18px;
+                    font-weight: 700;
+                    margin-bottom: 24px;
+                    padding-bottom: 16px;
+                    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+                }
+
+                .desktop-sidebar-item {
+                    padding: 12px 16px;
+                    border-radius: 10px;
+                    color: rgba(255, 255, 255, 0.8);
+                    font-size: 14px;
+                    margin-bottom: 8px;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                }
+
+                .desktop-sidebar-item:hover {
+                    background: rgba(255, 255, 255, 0.15);
+                    color: white;
+                }
+
+                .desktop-sidebar-item.active {
+                    background: rgba(255, 255, 255, 0.2);
+                    color: white;
+                    font-weight: 600;
+                }
+
+                .desktop-chat-wrapper {
+                    display: flex;
+                    flex-direction: column;
+                    flex: 1;
+                }
+
+                /* Chat UI Styles */
+                .chat-header {
+                    padding: 18px 20px;
+                    display: flex;
+                    align-items: center;
+                    color: white;
+                    position: relative;
+                }
+
+                .client-logo {
+                    width: 38px;
+                    height: 38px;
+                    border-radius: 50%;
+                    margin-right: 12px;
+                    background: white;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 20px;
+                    border: 2px solid rgba(255, 255, 255, 0.3);
+                }
+
+                .chat-header-content {
+                    flex: 1;
+                }
+
+                .chat-header-title {
+                    font-size: 15px;
+                    font-weight: 600;
+                    margin-bottom: 2px;
+                }
+
+                .chat-status {
+                    font-size: 11px;
+                    opacity: 0.8;
+                }
+
+                .header-actions {
+                    display: flex;
+                    gap: 8px;
+                }
+
+                .header-btn {
+                    width: 32px;
+                    height: 32px;
+                    border: none;
+                    border-radius: 8px;
+                    background: rgba(255, 255, 255, 0.2);
+                    color: white;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    transition: all 0.2s ease;
+                    font-size: 16px;
+                }
+
+                .header-btn:hover {
+                    background: rgba(255, 255, 255, 0.3);
+                }
+
+                .chat-messages {
+                    padding: 20px;
+                    height: 450px;
+                    overflow-y: auto;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 14px;
+                }
+
+                .message {
+                    max-width: 75%;
+                    padding: 12px 16px;
+                    border-radius: 16px;
+                    font-size: 14px;
+                    line-height: 1.5;
+                    word-wrap: break-word;
+                    animation: messageSlide 0.3s ease;
+                }
+
+                @keyframes messageSlide {
+                    from {
+                        opacity: 0;
+                        transform: translateY(10px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+
+                .message-with-avatar {
+                    display: flex;
+                    gap: 10px;
+                    align-items: flex-start;
+                }
+
+                .message-avatar {
+                    width: 32px;
+                    height: 32px;
+                    border-radius: 50%;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    color: white;
+                    font-size: 14px;
+                    font-weight: 600;
+                    flex-shrink: 0;
+                }
+
+                .incoming-message {
+                    align-self: flex-start;
+                    border-radius: 16px 16px 16px 4px;
+                }
+
+                .outgoing-message {
+                    align-self: flex-end;
+                    border-radius: 16px 16px 4px 16px;
+                }
+
+                .message-time {
+                    font-size: 10px;
+                    opacity: 0.6;
+                    margin-top: 4px;
+                }
+
+                .typing-indicator {
+                    display: flex;
+                    gap: 4px;
+                    padding: 12px 16px;
+                    background: white;
+                    border-radius: 16px;
+                    width: fit-content;
+                    align-self: flex-start;
+                }
+
+                .typing-dot {
+                    width: 8px;
+                    height: 8px;
+                    border-radius: 50%;
+                    background: #9ca3af;
+                    animation: typingAnimation 1.4s infinite;
+                }
+
+                .typing-dot:nth-child(2) {
+                    animation-delay: 0.2s;
+                }
+
+                .typing-dot:nth-child(3) {
+                    animation-delay: 0.4s;
+                }
+
+                @keyframes typingAnimation {
+                    0%, 60%, 100% {
+                        transform: translateY(0);
+                    }
+                    30% {
+                        transform: translateY(-10px);
+                    }
+                }
+
+                .chat-input-area {
+                    padding: 16px;
+                    background: white;
+                    border-top: 1px solid rgba(107, 122, 161, 0.12);
+                    display: flex;
+                    gap: 10px;
+                    align-items: center;
+                }
+
+                .chat-input-wrapper {
+                    flex: 1;
+                    display: flex;
+                    gap: 8px;
+                    align-items: center;
+                    background: #f8fafc;
+                    border: 1px solid #e5e7eb;
+                    border-radius: 12px;
+                    padding: 4px 4px 4px 12px;
+                    transition: all 0.2s ease;
+                }
+
+                .chat-input-wrapper:focus-within {
+                    border-color: #667eea;
+                    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+                }
+
+                .chat-input {
+                    flex: 1;
+                    padding: 10px 0;
+                    border: none;
+                    background: transparent;
+                    font-size: 14px;
+                    outline: none;
+                }
+
+                .input-action-btn {
+                    width: 32px;
+                    height: 32px;
+                    border: none;
+                    border-radius: 8px;
+                    background: transparent;
+                    color: #9ca3af;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+
+                .input-action-btn:hover {
+                    background: #e5e7eb;
+                    color: #374151;
+                }
+
+                .chat-send-button {
+                    padding: 11px 18px;
+                    border: none;
+                    border-radius: 10px;
+                    color: white;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                    font-size: 14px;
+                }
+
+                .chat-send-button:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+                }
+
+                .chat-powered {
+                    text-align: center;
+                    font-size: 12px;
+                    margin-top: 8px;
+                    color: #6b7aa1;
+                    font-weight: 500;
+                }
+
+                /* Code Editor */
+                .code-editor {
+                    background: #1e293b;
+                    border-radius: 12px;
+                    overflow: hidden;
+                    margin-top: 20px;
+                }
+
+                .code-header {
+                    background: #0f172a;
+                    padding: 12px 16px;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                }
+
+                .code-title {
+                    color: #94a3b8;
+                    font-size: 13px;
+                    font-weight: 600;
+                }
+
+                .code-copy-btn {
+                    padding: 6px 12px;
+                    background: #334155;
+                    border: none;
+                    border-radius: 6px;
+                    color: #e2e8f0;
+                    font-size: 12px;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                }
+
+                .code-copy-btn:hover {
+                    background: #475569;
+                }
+
+                .code-content {
+                    padding: 20px;
+                    max-height: 400px;
+                    overflow-y: auto;
+                }
+
+                .code-content pre {
+                    margin: 0;
+                    color: #e2e8f0;
+                    font-family: 'Courier New', monospace;
+                    font-size: 12px;
+                    line-height: 1.6;
+                }
+
+                /* Toast Notification */
+                .toast {
+                    position: fixed;
+                    top: 80px;
+                    right: 24px;
+                    background: white;
+                    color: #1f2937;
+                    padding: 16px 24px;
+                    border-radius: 12px;
+                    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+                    transform: translateX(400px);
+                    opacity: 0;
+                    transition: all 0.3s ease;
+                    z-index: 10000;
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    font-weight: 500;
+                    border-left: 4px solid #10b981;
+                }
+
+                .toast.show {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+
+                .toast-icon {
+                    font-size: 20px;
+                }
+
+                /* Scrollbar Styling */
+                .sidebar::-webkit-scrollbar,
+                .chat-messages::-webkit-scrollbar,
+                .code-content::-webkit-scrollbar,
+                .preview-frame-container::-webkit-scrollbar {
+                    width: 8px;
+                    height: 8px;
+                }
+
+                .sidebar::-webkit-scrollbar-track,
+                .chat-messages::-webkit-scrollbar-track,
+                .code-content::-webkit-scrollbar-track,
+                .preview-frame-container::-webkit-scrollbar-track {
+                    background: #f1f5f9;
+                    border-radius: 4px;
+                }
+
+                .sidebar::-webkit-scrollbar-thumb,
+                .chat-messages::-webkit-scrollbar-thumb,
+                .preview-frame-container::-webkit-scrollbar-thumb {
+                    background: #cbd5e1;
+                    border-radius: 4px;
+                }
+
+                .code-content::-webkit-scrollbar-thumb {
+                    background: #475569;
+                    border-radius: 4px;
+                }
+
+                .sidebar::-webkit-scrollbar-thumb:hover,
+                .chat-messages::-webkit-scrollbar-thumb:hover,
+                .code-content::-webkit-scrollbar-thumb:hover,
+                .preview-frame-container::-webkit-scrollbar-thumb:hover {
+                    background: #94a3b8;
+                }
+
+                /* Advanced Options */
+                .advanced-grid {
+                    display: grid;
+                    grid-template-columns: repeat(2, 1fr);
+                    gap: 12px;
+                }
+
+                .switch-control {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    padding: 12px;
+                    background: white;
+                    border: 1px solid #e5e7eb;
+                    border-radius: 8px;
+                }
+
+                .switch-label {
+                    font-size: 13px;
+                    font-weight: 500;
+                    color: #374151;
+                }
+
+                .switch {
+                    position: relative;
+                    width: 44px;
+                    height: 24px;
+                    background: #e5e7eb;
+                    border-radius: 12px;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                }
+
+                .switch.active {
+                    background: #667eea;
+                }
+
+                .switch-thumb {
+                    position: absolute;
+                    top: 2px;
+                    left: 2px;
+                    width: 20px;
+                    height: 20px;
+                    background: white;
+                    border-radius: 50%;
+                    transition: all 0.3s ease;
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+                }
+
+                .switch.active .switch-thumb {
+                    left: 22px;
+                }
+
+                @media (max-width: 1200px) {
+                    .sidebar {
+                        width: 320px;
+                    }
+                }
+
+                @media (max-width: 900px) {
+                    .main-container {
+                        flex-direction: column;
+                    }
+
+                    .sidebar {
+                        width: 100%;
+                        max-height: 50vh;
+                    }
+
+                    .preview-frame-container {
+                        padding: 20px;
+                    }
+                }
+            </style>
+        </head>
+        <body>
+            <!-- Top Navigation -->
+            <div class="top-nav">
+                <div class="nav-logo">
+                    <span>🎨</span>
+                    <div>
+                        <div>Chat UI Customizer Pro</div>
+                    </div>
+                </div>
+                <div class="nav-actions">
+                    <button class="nav-btn nav-btn-secondary" onclick="showCode()">
+                        📝 View Code
+                    </button>
+                    <button class="nav-btn nav-btn-secondary" onclick="copyToClipboard()">
+                        📋 Copy CSS
+                    </button>
+                    <button class="nav-btn nav-btn-primary" onclick="exportCSS()">
+                        💾 Download CSS
+                    </button>
+                </div>
+            </div>
+
+            <!-- Main Container -->
+            <div class="main-container">
+                <!-- Sidebar -->
+                <div class="sidebar">
+                    <!-- Tabs -->
+                    <div class="sidebar-tabs">
+                        <button class="tab-btn active" onclick="switchTab('presets')">✨ Presets</button>
+                        <button class="tab-btn" onclick="switchTab('customize')">🎨 Customize</button>
+                        <button class="tab-btn" onclick="switchTab('advanced')">⚙️ Advanced</button>
+                    </div>
+
+                    <!-- Presets Tab -->
+                    <div class="tab-content active" id="presets-tab">
+                        <div class="section-title" style="margin-bottom: 16px;">🎨 Theme Presets</div>
+                        <div class="presets-grid">
+                            <div class="preset-card" onclick="applyPreset('default')">
+                                <div class="preset-preview">
+                                    <div class="preset-color" style="background: #8B9DC3;"></div>
+                                    <div class="preset-color" style="background: #6B7AA1;"></div>
+                                    <div class="preset-color" style="background: #f8fafc;"></div>
+                                </div>
+                                <div class="preset-name">Default</div>
+                            </div>
+                            <div class="preset-card" onclick="applyPreset('ocean')">
+                                <div class="preset-preview">
+                                    <div class="preset-color" style="background: #0ea5e9;"></div>
+                                    <div class="preset-color" style="background: #0284c7;"></div>
+                                    <div class="preset-color" style="background: #e0f2fe;"></div>
+                                </div>
+                                <div class="preset-name">Ocean Blue</div>
+                            </div>
+                            <div class="preset-card" onclick="applyPreset('sunset')">
+                                <div class="preset-preview">
+                                    <div class="preset-color" style="background: #f97316;"></div>
+                                    <div class="preset-color" style="background: #ea580c;"></div>
+                                    <div class="preset-color" style="background: #ffedd5;"></div>
+                                </div>
+                                <div class="preset-name">Sunset</div>
+                            </div>
+                            <div class="preset-card" onclick="applyPreset('forest')">
+                                <div class="preset-preview">
+                                    <div class="preset-color" style="background: #10b981;"></div>
+                                    <div class="preset-color" style="background: #059669;"></div>
+                                    <div class="preset-color" style="background: #d1fae5;"></div>
+                                </div>
+                                <div class="preset-name">Forest</div>
+                            </div>
+                            <div class="preset-card" onclick="applyPreset('purple')">
+                                <div class="preset-preview">
+                                    <div class="preset-color" style="background: #a855f7;"></div>
+                                    <div class="preset-color" style="background: #9333ea;"></div>
+                                    <div class="preset-color" style="background: #f3e8ff;"></div>
+                                </div>
+                                <div class="preset-name">Purple Dream</div>
+                            </div>
+                            <div class="preset-card" onclick="applyPreset('rose')">
+                                <div class="preset-preview">
+                                    <div class="preset-color" style="background: #f43f5e;"></div>
+                                    <div class="preset-color" style="background: #e11d48;"></div>
+                                    <div class="preset-color" style="background: #ffe4e6;"></div>
+                                </div>
+                                <div class="preset-name">Rose</div>
+                            </div>
+                            <div class="preset-card" onclick="applyPreset('dark')">
+                                <div class="preset-preview">
+                                    <div class="preset-color" style="background: #1f2937;"></div>
+                                    <div class="preset-color" style="background: #111827;"></div>
+                                    <div class="preset-color" style="background: #374151;"></div>
+                                </div>
+                                <div class="preset-name">Dark Mode</div>
+                            </div>
+                            <div class="preset-card" onclick="applyPreset('mint')">
+                                <div class="preset-preview">
+                                    <div class="preset-color" style="background: #14b8a6;"></div>
+                                    <div class="preset-color" style="background: #0d9488;"></div>
+                                    <div class="preset-color" style="background: #ccfbf1;"></div>
+                                </div>
+                                <div class="preset-name">Mint Fresh</div>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 24px;">
+                            <button class="nav-btn nav-btn-secondary" style="width: 100%;" onclick="randomizeTheme()">
+                                🎲 Random Theme
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Customize Tab -->
+                    <div class="tab-content" id="customize-tab">
+                        <!-- Primary Gradient -->
+                        <div class="controls-section">
+                            <div class="section-title">🎨 Primary Gradient</div>
+                            <div class="control-group">
+                                <div class="control-label">
+                                    <span>Primary Colors</span>
+                                    <span class="control-label-info">Buttons & accents</span>
+                                </div>
+                                <div class="gradient-inputs">
+                                    <div class="gradient-color">
+                                        <span>Start</span>
+                                        <input type="color" id="primaryGradientStart" value="#8B9DC3" onchange="updatePreview()">
+                                    </div>
+                                    <div class="gradient-color">
+                                        <span>End</span>
+                                        <input type="color" id="primaryGradientEnd" value="#B8C5D6" onchange="updatePreview()">
+                                    </div>
+                                </div>
+                                <div class="gradient-angle">
+                                    <label class="control-label" style="margin-bottom: 8px;">
+                                        <span>Gradient Angle</span>
+                                        <span class="range-value" id="primaryAngleValue">135°</span>
+                                    </label>
+                                    <input type="range" id="primaryAngle" min="0" max="360" step="15" value="135" oninput="updatePreview()">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Header Gradient -->
+                        <div class="controls-section">
+                            <div class="section-title">📱 Header Gradient</div>
+                            <div class="control-group">
+                                <div class="control-label">
+                                    <span>Header Colors</span>
+                                    <span class="control-label-info">Top bar background</span>
+                                </div>
+                                <div class="gradient-inputs">
+                                    <div class="gradient-color">
+                                        <span>Start</span>
+                                        <input type="color" id="headerGradientStart" value="#6B7AA1" onchange="updatePreview()">
+                                    </div>
+                                    <div class="gradient-color">
+                                        <span>End</span>
+                                        <input type="color" id="headerGradientEnd" value="#8897B8" onchange="updatePreview()">
+                                    </div>
+                                </div>
+                                <div class="gradient-angle">
+                                    <label class="control-label" style="margin-bottom: 8px;">
+                                        <span>Gradient Angle</span>
+                                        <span class="range-value" id="headerAngleValue">135°</span>
+                                    </label>
+                                    <input type="range" id="headerAngle" min="0" max="360" step="15" value="135" oninput="updatePreview()">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- User Message -->
+                        <div class="controls-section">
+                            <div class="section-title">💬 User Message</div>
+                            <div class="control-group">
+                                <div class="control-label">
+                                    <span>Message Background</span>
+                                </div>
+                                <div class="gradient-inputs">
+                                    <div class="gradient-color">
+                                        <span>Start</span>
+                                        <input type="color" id="userMessageStart" value="#8B9DC3" onchange="updatePreview()">
+                                    </div>
+                                    <div class="gradient-color">
+                                        <span>End</span>
+                                        <input type="color" id="userMessageEnd" value="#9CADC7" onchange="updatePreview()">
+                                    </div>
+                                </div>
+                                <div style="margin-top: 12px;">
+                                    <label class="control-label">Text Color</label>
+                                    <div class="color-input-wrapper">
+                                        <input type="color" id="userTextColor" value="#ffffff" onchange="updatePreview()">
+                                        <input type="text" id="userTextColorHex" value="#ffffff" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bot Message -->
+                        <div class="controls-section">
+                            <div class="section-title">🤖 Bot Message</div>
+                            <div class="control-group">
+                                <label class="control-label">Background Color</label>
+                                <div class="color-input-wrapper">
+                                    <input type="color" id="botMessageBg" value="#f8fafc" onchange="updatePreview()">
+                                    <input type="text" id="botMessageBgHex" value="#f8fafc" readonly>
+                                </div>
+                                <div style="margin-top: 12px;">
+                                    <label class="control-label">Text Color</label>
+                                    <div class="color-input-wrapper">
+                                        <input type="color" id="botTextColor" value="#2d3748" onchange="updatePreview()">
+                                        <input type="text" id="botTextColorHex" value="#2d3748" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Background -->
+                        <div class="controls-section">
+                            <div class="section-title">🎭 Background Colors</div>
+                            <div class="control-group">
+                                <label class="control-label">Main Background</label>
+                                <div class="color-input-wrapper">
+                                    <input type="color" id="backgroundColor" value="#ffffff" onchange="updatePreview()">
+                                    <input type="text" id="backgroundColorHex" value="#ffffff" readonly>
+                                </div>
+                                <div style="margin-top: 12px;">
+                                    <label class="control-label">Secondary Background</label>
+                                    <div class="color-input-wrapper">
+                                        <input type="color" id="secondaryBg" value="#e5e9f0" onchange="updatePreview()">
+                                        <input type="text" id="secondaryBgHex" value="#e5e9f0" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Advanced Tab -->
+                    <div class="tab-content" id="advanced-tab">
+                        <!-- Typography -->
+                        <div class="controls-section">
+                            <div class="section-title">✏️ Typography</div>
+                            <div class="control-group">
+                                <label class="control-label">Font Family</label>
+                                <select id="fontFamily" onchange="updatePreview()">
+                                    <option value="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif">System Default</option>
+                                    <option value="'Inter', -apple-system, sans-serif">Inter</option>
+                                    <option value="'Poppins', sans-serif">Poppins</option>
+                                    <option value="'Montserrat', sans-serif">Montserrat</option>
+                                    <option value="'Roboto', sans-serif">Roboto</option>
+                                    <option value="'Open Sans', sans-serif">Open Sans</option>
+                                    <option value="'Lato', sans-serif">Lato</option>
+                                    <option value="'Raleway', sans-serif">Raleway</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Border Radius -->
+                        <div class="controls-section">
+                            <div class="section-title">📐 Border Radius</div>
+                            <div class="control-group">
+                                <label class="control-label">
+                                    <span>Corner Roundness</span>
+                                    <span class="range-value" id="borderRadiusValue">16px</span>
+                                </label>
+                                <input type="range" id="borderRadius" min="0" max="32" step="1" value="16" oninput="updatePreview()">
+                                <div class="range-label">
+                                    <span>Sharp (0px)</span>
+                                    <span>Rounded (32px)</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Opacity -->
+                        <div class="controls-section">
+                            <div class="section-title">👁️ Opacity</div>
+                            <div class="control-group">
+                                <label class="control-label">
+                                    <span>Glass Effect</span>
+                                    <span class="range-value" id="glassOpacityValue">98%</span>
+                                </label>
+                                <input type="range" id="glassOpacity" min="0.7" max="1" step="0.01" value="0.98" oninput="updatePreview()">
+                                <div class="range-label">
+                                    <span>Transparent</span>
+                                    <span>Solid</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Shadow -->
+                        <div class="controls-section">
+                            <div class="section-title">💫 Shadow Intensity</div>
+                            <div class="control-group">
+                                <label class="control-label">
+                                    <span>Shadow Strength</span>
+                                    <span class="range-value" id="shadowIntensityValue">0.15</span>
+                                </label>
+                                <input type="range" id="shadowIntensity" min="0" max="0.3" step="0.01" value="0.15" oninput="updatePreview()">
+                                <div class="range-label">
+                                    <span>None</span>
+                                    <span>Strong</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Advanced Options -->
+                        <div class="controls-section">
+                            <div class="section-title">🔧 Display Options</div>
+                            <div class="advanced-grid">
+                                <div class="switch-control">
+                                    <span class="switch-label">Show Avatar</span>
+                                    <div class="switch active" id="showAvatar" onclick="toggleSwitch('showAvatar')">
+                                        <div class="switch-thumb"></div>
+                                    </div>
+                                </div>
+                                <div class="switch-control">
+                                    <span class="switch-label">Show Status</span>
+                                    <div class="switch active" id="showStatus" onclick="toggleSwitch('showStatus')">
+                                        <div class="switch-thumb"></div>
+                                    </div>
+                                </div>
+                                <div class="switch-control">
+                                    <span class="switch-label">Show Time</span>
+                                    <div class="switch" id="showTime" onclick="toggleSwitch('showTime')">
+                                        <div class="switch-thumb"></div>
+                                    </div>
+                                </div>
+                                <div class="switch-control">
+                                    <span class="switch-label">Typing Indicator</span>
+                                    <div class="switch active" id="showTyping" onclick="toggleSwitch('showTyping')">
+                                        <div class="switch-thumb"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Reset -->
+                        <div style="margin-top: 24px;">
+                            <button class="nav-btn nav-btn-secondary" style="width: 100%; background: #ef4444; color: white; border: none;" onclick="resetToDefault()">
+                                🔄 Reset to Default
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Preview Container -->
+                <div class="preview-container">
+                    <!-- Preview Toolbar -->
+                    <div class="preview-toolbar">
+                        <div class="preview-modes">
+                            <button class="mode-btn" onclick="setPreviewMode('mobile')">📱 Mobile</button>
+                            <button class="mode-btn active" onclick="setPreviewMode('widget')">💬 Widget</button>
+                            <button class="mode-btn" onclick="setPreviewMode('desktop')">🖥️ Desktop</button>
+                        </div>
+                        <div class="preview-zoom">
+                            <button class="zoom-btn" onclick="adjustZoom(-0.1)">−</button>
+                            <span class="zoom-level" id="zoomLevel">100%</span>
+                            <button class="zoom-btn" onclick="adjustZoom(0.1)">+</button>
+                        </div>
+                    </div>
+
+                    <!-- Preview Frame -->
+                    <div class="preview-frame-container">
+                        <div class="preview-frame" id="previewFrame">
+                            <!-- Desktop Sidebar (only visible in desktop mode) -->
+                            <div class="desktop-sidebar">
+                                <div class="desktop-sidebar-header">💬 Chat Support</div>
+                                <div class="desktop-sidebar-item active">📋 All Conversations</div>
+                                <div class="desktop-sidebar-item">⭐ Favorites</div>
+                                <div class="desktop-sidebar-item">📁 Archives</div>
+                                <div class="desktop-sidebar-item">⚙️ Settings</div>
+                            </div>
+
+                            <!-- Chat Content Wrapper -->
+                            <div class="desktop-chat-wrapper">
+                                <div class="chat-header" id="previewHeader">
+                                    <div class="client-logo">💬</div>
+                                    <div class="chat-header-content">
+                                        <div class="chat-header-title">Chat Support</div>
+                                        <div class="chat-status" id="chatStatus">● Online</div>
+                                    </div>
+                                    <div class="header-actions">
+                                        <button class="header-btn">🔄</button>
+                                    </div>
+                                </div>
+                                
+                                <div class="chat-messages" id="previewMessages">
+                                    <div class="message-with-avatar" id="botMessageContainer">
+                                        <div class="message-avatar" id="botAvatar">🤖</div>
+                                        <div>
+                                            <div class="message incoming-message" id="previewIncoming">
+                                                Hello! 👋 How can I help you today?
+                                            </div>
+                                            <div class="message-time" id="messageTime1" style="display: none;">10:30 AM</div>
+                                        </div>
+                                    </div>
+
+                                    <div style="display: flex; justify-content: flex-end;">
+                                        <div>
+                                            <div class="message outgoing-message" id="previewOutgoing">
+                                                I need help with my account settings
+                                            </div>
+                                            <div class="message-time" id="messageTime2" style="display: none; text-align: right;">10:31 AM</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="message-with-avatar">
+                                        <div class="message-avatar" id="botAvatar2">🤖</div>
+                                        <div>
+                                            <div class="message incoming-message">
+                                                Sure! I'd be happy to help you with your account settings. What specific issue are you experiencing?
+                                            </div>
+                                            <div class="message-time" id="messageTime3" style="display: none;">10:31 AM</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="typing-indicator" id="typingIndicator">
+                                        <div class="typing-dot"></div>
+                                        <div class="typing-dot"></div>
+                                        <div class="typing-dot"></div>
+                                    </div>
+                                </div>
+
+                                <div class="chat-input-area">
+                                    <div class="chat-input-wrapper">
+                                        <input type="text" class="chat-input" placeholder="Type your message..." disabled>
+                                        <button class="input-action-btn">📎</button>
+                                        <button class="input-action-btn">😊</button>
+                                    </div>
+                                    <button class="chat-send-button" id="previewSendBtn">Send</button>
+                                </div>
+                                <div class="chat-powered">⚡ Powered by Your Company</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Toast Notification -->
+            <div class="toast" id="toast">
+                <span class="toast-icon">✅</span>
+                <span id="toastMessage">Success!</span>
+            </div>
+
+            <!-- Code Modal (Hidden by default) -->
+            <div id="codeModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 10000; padding: 40px; overflow-y: auto;">
+                <div style="max-width: 900px; margin: 0 auto;">
+                    <div class="code-editor">
+                        <div class="code-header">
+                            <span class="code-title">Generated CSS Code</span>
+                            <div style="display: flex; gap: 8px;">
+                                <button class="code-copy-btn" onclick="copyCodeToClipboard()">📋 Copy</button>
+                                <button class="code-copy-btn" onclick="hideCode()">✕ Close</button>
+                            </div>
+                        </div>
+                        <div class="code-content">
+                            <pre id="cssCode"></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                let currentZoom = 1;
+
+                // Initialize
+                document.addEventListener('DOMContentLoaded', () => {
+                    updatePreview();
+                    syncColorInputs();
+                });
+
+                // Sync color inputs with hex displays
+                function syncColorInputs() {
+                    const colorInputs = [
+                        'userTextColor', 'botMessageBg', 'botTextColor',
+                        'backgroundColor', 'secondaryBg'
+                    ];
+
+                    colorInputs.forEach(id => {
+                        const colorInput = document.getElementById(id);
+                        const hexInput = document.getElementById(id + 'Hex');
+                        if (colorInput && hexInput) {
+                            colorInput.addEventListener('input', (e) => {
+                                hexInput.value = e.target.value.toUpperCase();
+                            });
+                        }
+                    });
+                }
+
+                // Switch tabs
+                function switchTab(tab) {
+                    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+                    event.target.classList.add('active');
+                    document.getElementById(tab + '-tab').classList.add('active');
+                }
+
+                // Update preview in real-time
+                function updatePreview() {
+                    const primaryStart = document.getElementById('primaryGradientStart').value;
+                    const primaryEnd = document.getElementById('primaryGradientEnd').value;
+                    const primaryAngle = document.getElementById('primaryAngle').value;
+                    document.getElementById('primaryAngleValue').textContent = primaryAngle + '°';
+
+                    const headerStart = document.getElementById('headerGradientStart').value;
+                    const headerEnd = document.getElementById('headerGradientEnd').value;
+                    const headerAngle = document.getElementById('headerAngle').value;
+                    document.getElementById('headerAngleValue').textContent = headerAngle + '°';
+
+                    const userMessageStart = document.getElementById('userMessageStart').value;
+                    const userMessageEnd = document.getElementById('userMessageEnd').value;
+                    const userTextColor = document.getElementById('userTextColor').value;
+
+                    const botMessageBg = document.getElementById('botMessageBg').value;
+                    const botTextColor = document.getElementById('botTextColor').value;
+
+                    const backgroundColor = document.getElementById('backgroundColor').value;
+                    const secondaryBg = document.getElementById('secondaryBg').value;
+
+                    const glassOpacity = document.getElementById('glassOpacity').value;
+                    document.getElementById('glassOpacityValue').textContent = Math.round(glassOpacity * 100) + '%';
+
+                    const borderRadius = document.getElementById('borderRadius').value;
+                    document.getElementById('borderRadiusValue').textContent = borderRadius + 'px';
+
+                    const shadowIntensity = document.getElementById('shadowIntensity').value;
+                    document.getElementById('shadowIntensityValue').textContent = shadowIntensity;
+
+                    const fontFamily = document.getElementById('fontFamily').value;
+
+                    // Apply styles
+                    const primaryGradient = `linear-gradient(${primaryAngle}deg, ${primaryStart}, ${primaryEnd})`;
+                    const headerGradient = `linear-gradient(${headerAngle}deg, ${headerStart}, ${headerEnd})`;
+                    const userGradient = `linear-gradient(135deg, ${userMessageStart}, ${userMessageEnd})`;
+
+                    document.getElementById('previewHeader').style.background = headerGradient;
+                    document.getElementById('previewSendBtn').style.background = primaryGradient;
+                    document.querySelectorAll('.message-avatar').forEach(avatar => {
+                        avatar.style.background = primaryGradient;
+                    });
+
+                    document.querySelectorAll('.incoming-message').forEach(msg => {
+                        msg.style.background = botMessageBg;
+                        msg.style.color = botTextColor;
+                    });
+
+                    document.querySelectorAll('.outgoing-message').forEach(msg => {
+                        msg.style.background = userGradient;
+                        msg.style.color = userTextColor;
+                    });
+
+                    document.getElementById('previewMessages').style.background = secondaryBg;
+                    document.querySelector('.preview-frame').style.fontFamily = fontFamily;
+                    document.getElementById('previewHeader').style.borderTopLeftRadius = borderRadius + 'px';
+                    document.getElementById('previewHeader').style.borderTopRightRadius = borderRadius + 'px';
+
+                    // Update hex displays
+                    if (document.getElementById('userTextColorHex')) {
+                        document.getElementById('userTextColorHex').value = userTextColor.toUpperCase();
+                    }
+                    if (document.getElementById('botMessageBgHex')) {
+                        document.getElementById('botMessageBgHex').value = botMessageBg.toUpperCase();
+                    }
+                    if (document.getElementById('botTextColorHex')) {
+                        document.getElementById('botTextColorHex').value = botTextColor.toUpperCase();
+                    }
+                    if (document.getElementById('backgroundColorHex')) {
+                        document.getElementById('backgroundColorHex').value = backgroundColor.toUpperCase();
+                    }
+                    if (document.getElementById('secondaryBgHex')) {
+                        document.getElementById('secondaryBgHex').value = secondaryBg.toUpperCase();
+                    }
+                }
+
+                // Apply preset themes
+                function applyPreset(preset) {
+                    const presets = {
+                        default: {
+                            primaryStart: '#8B9DC3', primaryEnd: '#B8C5D6',
+                            headerStart: '#6B7AA1', headerEnd: '#8897B8',
+                            userStart: '#8B9DC3', userEnd: '#9CADC7',
+                            botBg: '#f8fafc', botText: '#2d3748',
+                            userText: '#ffffff', mainBg: '#ffffff', secondaryBg: '#e5e9f0'
+                        },
+                        ocean: {
+                            primaryStart: '#0ea5e9', primaryEnd: '#38bdf8',
+                            headerStart: '#0284c7', headerEnd: '#0ea5e9',
+                            userStart: '#0ea5e9', userEnd: '#38bdf8',
+                            botBg: '#e0f2fe', botText: '#075985',
+                            userText: '#ffffff', mainBg: '#ffffff', secondaryBg: '#f0f9ff'
+                        },
+                        sunset: {
+                            primaryStart: '#f97316', primaryEnd: '#fb923c',
+                            headerStart: '#ea580c', headerEnd: '#f97316',
+                            userStart: '#f97316', userEnd: '#fb923c',
+                            botBg: '#ffedd5', botText: '#7c2d12',
+                            userText: '#ffffff', mainBg: '#ffffff', secondaryBg: '#fff7ed'
+                        },
+                        forest: {
+                            primaryStart: '#10b981', primaryEnd: '#34d399',
+                            headerStart: '#059669', headerEnd: '#10b981',
+                            userStart: '#10b981', userEnd: '#34d399',
+                            botBg: '#d1fae5', botText: '#065f46',
+                            userText: '#ffffff', mainBg: '#ffffff', secondaryBg: '#ecfdf5'
+                        },
+                        purple: {
+                            primaryStart: '#a855f7', primaryEnd: '#c084fc',
+                            headerStart: '#9333ea', headerEnd: '#a855f7',
+                            userStart: '#a855f7', userEnd: '#c084fc',
+                            botBg: '#f3e8ff', botText: '#581c87',
+                            userText: '#ffffff', mainBg: '#ffffff', secondaryBg: '#faf5ff'
+                        },
+                        rose: {
+                            primaryStart: '#f43f5e', primaryEnd: '#fb7185',
+                            headerStart: '#e11d48', headerEnd: '#f43f5e',
+                            userStart: '#f43f5e', userEnd: '#fb7185',
+                            botBg: '#ffe4e6', botText: '#881337',
+                            userText: '#ffffff', mainBg: '#ffffff', secondaryBg: '#fff1f2'
+                        },
+                        dark: {
+                            primaryStart: '#1f2937', primaryEnd: '#374151',
+                            headerStart: '#111827', headerEnd: '#1f2937',
+                            userStart: '#374151', userEnd: '#4b5563',
+                            botBg: '#374151', botText: '#f3f4f6',
+                            userText: '#ffffff', mainBg: '#1f2937', secondaryBg: '#111827'
+                        },
+                        mint: {
+                            primaryStart: '#14b8a6', primaryEnd: '#2dd4bf',
+                            headerStart: '#0d9488', headerEnd: '#14b8a6',
+                            userStart: '#14b8a6', userEnd: '#2dd4bf',
+                            botBg: '#ccfbf1', botText: '#134e4a',
+                            userText: '#ffffff', mainBg: '#ffffff', secondaryBg: '#f0fdfa'
+                        }
+                    };
+
+                    const theme = presets[preset];
+                    if (!theme) return;
+
+                    document.getElementById('primaryGradientStart').value = theme.primaryStart;
+                    document.getElementById('primaryGradientEnd').value = theme.primaryEnd;
+                    document.getElementById('headerGradientStart').value = theme.headerStart;
+                    document.getElementById('headerGradientEnd').value = theme.headerEnd;
+                    document.getElementById('userMessageStart').value = theme.userStart;
+                    document.getElementById('userMessageEnd').value = theme.userEnd;
+                    document.getElementById('botMessageBg').value = theme.botBg;
+                    document.getElementById('botTextColor').value = theme.botText;
+                    document.getElementById('userTextColor').value = theme.userText;
+                    document.getElementById('backgroundColor').value = theme.mainBg;
+                    document.getElementById('secondaryBg').value = theme.secondaryBg;
+
+                    updatePreview();
+                    showToast(`✨ ${preset.charAt(0).toUpperCase() + preset.slice(1)} theme applied!`);
+
+                    // Highlight active preset
+                    document.querySelectorAll('.preset-card').forEach(card => card.classList.remove('active'));
+                    event.target.closest('.preset-card').classList.add('active');
+                }
+
+                // Randomize theme
+                function randomizeTheme() {
+                    const randomColor = () => '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
+                    
+                    document.getElementById('primaryGradientStart').value = randomColor();
+                    document.getElementById('primaryGradientEnd').value = randomColor();
+                    document.getElementById('headerGradientStart').value = randomColor();
+                    document.getElementById('headerGradientEnd').value = randomColor();
+                    document.getElementById('userMessageStart').value = randomColor();
+                    document.getElementById('userMessageEnd').value = randomColor();
+                    
+                    updatePreview();
+                    showToast('🎲 Random theme generated!');
+                }
+
+                // Toggle switches
+                function toggleSwitch(id) {
+                    const switchEl = document.getElementById(id);
+                    switchEl.classList.toggle('active');
+                    
+                    const isActive = switchEl.classList.contains('active');
+                    
+                    switch(id) {
+                        case 'showAvatar':
+                            document.querySelectorAll('.message-avatar').forEach(el => {
+                                el.style.display = isActive ? 'flex' : 'none';
+                            });
+                            break;
+                        case 'showStatus':
+                            document.getElementById('chatStatus').style.display = isActive ? 'block' : 'none';
+                            break;
+                        case 'showTime':
+                            document.querySelectorAll('.message-time').forEach(el => {
+                                el.style.display = isActive ? 'block' : 'none';
+                            });
+                            break;
+                        case 'showTyping':
+                            document.getElementById('typingIndicator').style.display = isActive ? 'flex' : 'none';
+                            break;
+                    }
+                }
+
+                // Preview modes
+                function setPreviewMode(mode) {
+                    document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+                    event.target.classList.add('active');
+
+                    const frame = document.getElementById('previewFrame');
+                    frame.classList.remove('mobile', 'desktop', 'widget');
+                    
+                    if (mode === 'mobile') {
+                        frame.classList.add('mobile');
+                    } else if (mode === 'desktop') {
+                        frame.classList.add('desktop');
+                    } else if (mode === 'widget') {
+                        // Widget mode is default (no special class needed)
+                        frame.classList.add('widget');
+                    }
+                }
+
+                // Zoom controls
+                function adjustZoom(delta) {
+                    currentZoom = Math.max(0.5, Math.min(1.5, currentZoom + delta));
+                    document.getElementById('previewFrame').style.transform = `scale(${currentZoom})`;
+                    document.getElementById('zoomLevel').textContent = Math.round(currentZoom * 100) + '%';
+                }
+
+                // Generate CSS
+                function generateCSS() {
+                    const primaryStart = document.getElementById('primaryGradientStart').value;
+                    const primaryEnd = document.getElementById('primaryGradientEnd').value;
+                    const primaryAngle = document.getElementById('primaryAngle').value;
+                    
+                    const headerStart = document.getElementById('headerGradientStart').value;
+                    const headerEnd = document.getElementById('headerGradientEnd').value;
+                    const headerAngle = document.getElementById('headerAngle').value;
+                    
+                    const userStart = document.getElementById('userMessageStart').value;
+                    const userEnd = document.getElementById('userMessageEnd').value;
+                    const userText = document.getElementById('userTextColor').value;
+                    
+                    const botBg = document.getElementById('botMessageBg').value;
+                    const botText = document.getElementById('botTextColor').value;
+                    
+                    const mainBg = document.getElementById('backgroundColor').value;
+                    const secondaryBg = document.getElementById('secondaryBg').value;
+                    
+                    const glassOpacity = document.getElementById('glassOpacity').value;
+                    const borderRadius = document.getElementById('borderRadius').value;
+                    const shadowIntensity = document.getElementById('shadowIntensity').value;
+                    const fontFamily = document.getElementById('fontFamily').value;
+
+                    return `:root {
+            --primary-gradient: linear-gradient(${primaryAngle}deg, ${primaryStart} 0%, ${primaryEnd} 100%);
+            --header-gradient: linear-gradient(${headerAngle}deg, ${headerStart} 0%, ${headerEnd} 100%);
+            --glass-bg: rgba(255, 255, 255, ${glassOpacity});
+            --bot-message-bg: ${botBg};
+            --user-message-bg: linear-gradient(135deg, ${userStart} 0%, ${userEnd} 100%);
+            --bot-text-color: ${botText};
+            --user-text-color: ${userText};
+            --background: ${mainBg};
+            --secondary: ${secondaryBg};
+            --border-color: rgba(107, 122, 161, 0.12);
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 4px 16px rgba(107, 122, 161, ${shadowIntensity});
+            --font-family: ${fontFamily};
+            --chat-border-radius: ${borderRadius}px;
+        }
+
+        /* Copy the rest of your chat-ui.css file below this :root section */`;
+                }
+
+                // Show code modal
+                function showCode() {
+                    const css = generateCSS();
+                    document.getElementById('cssCode').textContent = css;
+                    document.getElementById('codeModal').style.display = 'block';
+                }
+
+                // Hide code modal
+                function hideCode() {
+                    document.getElementById('codeModal').style.display = 'none';
+                }
+
+                // Copy code to clipboard
+                function copyCodeToClipboard() {
+                    const code = document.getElementById('cssCode').textContent;
+                    navigator.clipboard.writeText(code).then(() => {
+                        showToast('📋 Code copied to clipboard!');
+                    });
+                }
+
+                // Export CSS
+                function exportCSS() {
+                    const css = generateCSS();
+                    const blob = new Blob([css], { type: 'text/css' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'chat-ui-custom-variables.css';
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    showToast('💾 CSS file downloaded!');
+                }
+
+                // Copy to clipboard
+                function copyToClipboard() {
+                    const css = generateCSS();
+                    navigator.clipboard.writeText(css).then(() => {
+                        showToast('📋 CSS copied to clipboard!');
+                    }).catch(err => {
+                        console.error('Failed to copy:', err);
+                    });
+                }
+
+                // Reset to default
+                function resetToDefault() {
+                    if (!confirm('Are you sure you want to reset all settings to default?')) return;
+
+                    document.getElementById('primaryGradientStart').value = '#8B9DC3';
+                    document.getElementById('primaryGradientEnd').value = '#B8C5D6';
+                    document.getElementById('primaryAngle').value = '135';
+                    document.getElementById('headerGradientStart').value = '#6B7AA1';
+                    document.getElementById('headerGradientEnd').value = '#8897B8';
+                    document.getElementById('headerAngle').value = '135';
+                    document.getElementById('userMessageStart').value = '#8B9DC3';
+                    document.getElementById('userMessageEnd').value = '#9CADC7';
+                    document.getElementById('userTextColor').value = '#ffffff';
+                    document.getElementById('botMessageBg').value = '#f8fafc';
+                    document.getElementById('botTextColor').value = '#2d3748';
+                    document.getElementById('backgroundColor').value = '#ffffff';
+                    document.getElementById('secondaryBg').value = '#e5e9f0';
+                    document.getElementById('glassOpacity').value = '0.98';
+                    document.getElementById('borderRadius').value = '16';
+                    document.getElementById('shadowIntensity').value = '0.15';
+                    document.getElementById('fontFamily').value = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif";
+
+                    updatePreview();
+                    showToast('🔄 Reset to default settings!');
+                }
+
+                // Show toast notification
+                function showToast(message) {
+                    const toast = document.getElementById('toast');
+                    const toastMessage = document.getElementById('toastMessage');
+                    toastMessage.textContent = message;
+                    toast.classList.add('show');
+                    setTimeout(() => {
+                        toast.classList.remove('show');
+                    }, 3000);
+                }
+
+                // Close code modal on outside click
+                document.getElementById('codeModal')?.addEventListener('click', (e) => {
+                    if (e.target.id === 'codeModal') {
+                        hideCode();
+                    }
+                });
+            </script>
+        </body>
+        </html>

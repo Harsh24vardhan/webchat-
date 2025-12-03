@@ -1,7 +1,24 @@
-window.vcxWebChat = {
-  companyName: "Versalence Infocomm",
-  uuid: "e765aafe-45c7-4d08-b8ed-bb3ece3cf78b",
-  logo: "https://fs.versalence.online/media/e765aafe-45c7-4d08-b8ed-bb3ece3cf78b/config/1733903386571-992395069.jpg",
-  botId: "ff01e3d9-75e7-40e3-a013-46b63d943026",
-  clientId: "c0834208-c636-4db1-9fd4-4b196225d4c5",
+const config = {
+  headerTitle: "james stevens",
+  clientLogo: "https://versal.one/assets/images/favicon.png",
+  clientName: "james stevens",
+  contactDetails: "james@evergreenjunction.com",
+  chatPoweredBy: "⚡Powered by evergreen junction",
+  PoweredBy: "evergreen junction",
+  Language: "EN",
+  clientId: "58aa9b93-2a7a-4733-bf29-18ce121f0df7",
+  uuid: "139b0afd-3e5e-4743-99c5-9d59b59359b4",
+  ServerURL: "https://chatapp.versalence.online",
 };
+
+window.getConfig = () => config;
+
+const link = document.createElement("link");
+link.rel = "stylesheet";
+link.href = "chat-ui.css";
+document.head.appendChild(link);
+//hjgjh
+
+const script = document.createElement("script");
+script.src = "chatWidget.js";
+document.head.appendChild(script);

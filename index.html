@@ -1,30 +1,325 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Chat Widget</title>
-    <style>
-      *{
-        
-      }
-    </style>
-  </head>
-  <body>
-    <script
-      src="https://cdn.socket.io/4.7.5/socket.io.min.js"
-      crossorigin="anonymous"
-    ></script>
-    
-    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js" crossorigin="anonymous"></script>
 
-                <script type="module" src="https://fs.dashboard.chatmate.co.il/media/c1ffaa7e-e435-4bfe-a941-2eb2af6f3fa2/config/2eb2af6f3fa2_config.js"></script>
-                      
-<script type="module" src="https://fs.dashboard.chatmate.co.il/chatconfig/chatWidget.js"></script>
-    
-    <!-- <script type="module" src="./config.js"></script>
-    <script type="module" src="./chatWidget.js"></script> -->
-  </body>
-</html>
-
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="light">
+  <meta name="theme-color" content="#6B7AA1">
+  <title>Modern Webchat - Embedded</title>
   
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: #E8EBF0;
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      min-height: 100vh;
+    }
+
+    .chat-iframe-container {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: min(92vw, 1100px);
+      height: min(88vh, 750px);
+      z-index: 1000;
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(107, 122, 161, 0.18);
+      overflow: hidden;
+      background: white;
+    }
+
+    .chat-iframe-container iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      border-radius: 12px;
+      display: block;
+      background: white;
+    }
+
+    .chat-iframe-container::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(107, 122, 161, 0.15);
+      z-index: -1;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        background: #F0F3F8;
+      }
+
+      .chat-iframe-container {
+        top: 0;
+        left: 0;
+        transform: none;
+        width: 100vw;
+        height: 100vh;
+        height: calc(var(--vh, 1vh) * 100);
+        min-height: 100vh;
+        min-height: -webkit-fill-available;
+        max-height: none;
+        border-radius: 0;
+        box-shadow: none;
+      }
+
+      .chat-iframe-container::before {
+        display: none;
+      }
+
+      .chat-iframe-container iframe {
+        border-radius: 0;
+      }
+    }
+
+    .chat-iframe-container.loading {
+      background: #8B9DC3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+    }
+
+    .loading-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .loader {
+      width: 48px;
+      height: 48px;
+      border: 4px solid rgba(255, 255, 255, 0.2);
+      border-top-color: white;
+      border-radius: 50%;
+      
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    @supports (padding: max(0px)) {
+      .chat-iframe-container {
+        padding: max(env(safe-area-inset-top), 0px) 
+                 max(env(safe-area-inset-right), 0px) 
+                 max(env(safe-area-inset-bottom), 0px) 
+                 max(env(safe-area-inset-left), 0px);
+      }
+    }
+
+    .error-container {
+      text-align: center;
+      padding: 48px 32px;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .error-icon {
+      width: 64px;
+      height: 64px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+    }
+
+    .error-title {
+      font-size: 22px;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .error-message {
+      font-size: 15px;
+      opacity: 0.9;
+      max-width: 400px;
+      line-height: 1.6;
+    }
+
+    .error-button {
+      background: white;
+      color: #6B7AA1;
+      border: none;
+      padding: 12px 28px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      
+    }
+
+    .error-button:hover {
+      transform: scale(1.05);
+    }
+
+    .error-button:active {
+      transform: scale(0.95);
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="chat-iframe-container loading" id="chatContainer">
+    <!-- Close button removed for iframe mode -->
+    <div class="loading-content">
+      <div class="loader"></div>
+      <div class="loading-text">Loading Chat...</div>
+    </div>
+  </div>
+
+  <script>
+    function setViewportHeight() {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    }
+
+    setViewportHeight();
+    window.addEventListener('resize', setViewportHeight);
+    window.addEventListener('orientationchange', setViewportHeight);
+
+    (function initializeChat() {
+      const container = document.getElementById('chatContainer');
+      
+      const iframe = document.createElement('iframe');
+      iframe.src = 'test.html?embed=true';
+      iframe.title = 'Modern Chat Widget';
+      iframe.allow = 'microphone; camera; geolocation; clipboard-write';
+      iframe.loading = 'eager';
+      iframe.sandbox = 'allow-same-origin allow-scripts allow-forms allow-popups allow-modals';
+      
+      const loadingTimeout = setTimeout(() => {
+        showError('Loading timeout - please refresh the page');
+      }, 10000);
+
+      iframe.onload = function() {
+        clearTimeout(loadingTimeout);
+        
+        setTimeout(() => {
+          container.classList.remove('loading');
+          const loadingContent = container.querySelector('.loading-content');
+          if (loadingContent) {
+            loadingContent.style.display = 'none';
+          }
+          
+          // Close button remains hidden for iframe mode
+          
+          iframe.style.opacity = '0';
+          iframe.style.transition = 'opacity 0.3s ease';
+          setTimeout(() => {
+            iframe.style.opacity = '1';
+          }, 50);
+        }, 200);
+      };
+
+      iframe.onerror = function() {
+        clearTimeout(loadingTimeout);
+        showError('Failed to load chat widget');
+      };
+
+      function showError(message) {
+        container.innerHTML = `
+          <div class="error-container">
+            <div class="error-icon">ÃƒÂ¢Ã…Â¡ ÃƒÂ¯Ã‚Â¸Ã‚Â</div>
+            <h2 class="error-title">Something went wrong</h2>
+            <p class="error-message">${message}</p>
+            <button class="error-button" onclick="location.reload()">
+              Refresh Page
+            </button>
+          </div>
+        `;
+      }
+
+      container.appendChild(iframe);
+
+      // Close button removed for iframe mode
+
+      window.addEventListener('message', function(event) {
+        const { type, mode } = event.data;
+
+        switch(type) {
+          case 'resize-iframe':
+            handleResize(mode);
+            break;
+          case 'close-chat':
+            closeChat();
+            break;
+        }
+      });
+
+      function handleResize(mode) {
+        if (mode === 'fullscreen') {
+          container.style.width = '100vw';
+          container.style.height = '100vh';
+          container.style.borderRadius = '0';
+          container.style.top = '0';
+          container.style.left = '0';
+          container.style.transform = 'none';
+        } else if (mode === 'widget') {
+          container.style.width = 'min(92vw, 1100px)';
+          container.style.height = 'min(88vh, 750px)';
+          container.style.borderRadius = '12px';
+          container.style.top = '50%';
+          container.style.left = '50%';
+          container.style.transform = 'translate(-50%, -50%)';
+        }
+      }
+
+      function closeChat() {
+        container.style.opacity = '0';
+        setTimeout(() => {
+          container.style.display = 'none';
+        }, 300);
+      }
+
+      document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+          closeChat();
+        }
+      });
+
+      document.body.style.overflow = 'hidden';
+    })();
+
+    window.addEventListener('online', () => {
+      document.documentElement.setAttribute('data-connection', 'online');
+    });
+
+    window.addEventListener('offline', () => {
+      document.documentElement.setAttribute('data-connection', 'offline');
+    });
+  </script>
+
+</body>
+
+</html>
