@@ -18,6 +18,7 @@ const initializeChat = (chatWindow, config) => {
   webhook = config.clientId;
 
   const chatBubble = document.getElementById("chat-bubble");
+  const launcherWrapper = document.getElementById("chat-launcher-wrapper");
   const closeChatButton = document.querySelector(".close-chat-button");
   const chatInput = document.getElementById("chat-input");
   const sendButton = document.getElementById("chat-send-button");
@@ -69,7 +70,7 @@ const initializeChat = (chatWindow, config) => {
     document.body.classList.add("chat-embedded-body");
     chatWindowElement.classList.add("chat-embedded");
     chatWindowElement.style.display = "flex";
-    chatBubble.style.display = "none";
+    if (launcherWrapper) launcherWrapper.style.display = "none";
     closeChatButton.style.display = "none";
     setTimeout(() => {
       scrollToBottom();
@@ -79,7 +80,7 @@ const initializeChat = (chatWindow, config) => {
 
   chatBubble.addEventListener("click", function () {
     chatWindowElement.style.display = "flex";
-    chatBubble.style.display = "none";
+    if (launcherWrapper) launcherWrapper.style.display = "none";
     setTimeout(() => {
       scrollToBottom();
     }, 100);
@@ -89,7 +90,7 @@ const initializeChat = (chatWindow, config) => {
   closeChatButton.addEventListener("click", function (e) {
     e.stopPropagation();
     chatWindowElement.style.display = "none";
-    chatBubble.style.display = "block";
+    if (launcherWrapper) launcherWrapper.style.display = "flex";
   });
 
   chatHeader.addEventListener("click", function (event) {
@@ -1344,9 +1345,41 @@ function loadedChat() {
   chatContainer.id = "chat-window";
   document.body.appendChild(chatContainer);
 
+  // ✨ Create the new launcher structure with label and badge
+  const config = getConfig();
+  const launcherWrapper = document.createElement("div");
+  launcherWrapper.id = "chat-launcher-wrapper";
+  launcherWrapper.classList.add("chat-launcher-wrapper");
+
+  // Add launcher type class
+  if (config.launcherType === "bubble") {
+    launcherWrapper.classList.add("launcher-type-bubble");
+  } else {
+    launcherWrapper.classList.add("launcher-type-circle");
+  }
+
+  // Create label if enabled
+  if (config.showLauncherLabel && config.launcherLabel) {
+    const launcherLabel = document.createElement("div");
+    launcherLabel.className = "chat-launcher-label";
+    launcherLabel.textContent = config.launcherLabel;
+    launcherWrapper.appendChild(launcherLabel);
+  }
+
+  // Create the chat bubble
   const chatBubble = document.createElement("div");
   chatBubble.id = "chat-bubble";
-  document.body.appendChild(chatBubble);
+
+  // Add notification badge if count > 0
+  if (config.notificationCount && config.notificationCount > 0) {
+    const badge = document.createElement("span");
+    badge.className = "chat-notification-badge";
+    badge.textContent = config.notificationCount;
+    chatBubble.appendChild(badge);
+  }
+
+  launcherWrapper.appendChild(chatBubble);
+  document.body.appendChild(launcherWrapper);
 
   chatContainer.innerHTML = `
            <div class="chat-header">
@@ -1392,7 +1425,6 @@ function loadedChat() {
         </div>
     `;
 
-  const config = getConfig();
   const clientLogos = chatContainer.querySelectorAll(".client-logo");
   clientLogos.forEach((logo) => {
     logo.src = config.clientLogo;
