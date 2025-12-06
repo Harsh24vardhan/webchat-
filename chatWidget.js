@@ -2,6 +2,8 @@ const initializeChat = (chatWindow, config) => {
   let socket;
   let socketReady = false;
   let firstMessageSent = false;
+  let unreadMessageCount = 0;
+  let isChatOpen = false;
 
   const headerTitle = chatWindow.querySelector(".chat-header-title");
   const clientLogo = chatWindow.querySelector(".client-logo");
@@ -72,6 +74,7 @@ const initializeChat = (chatWindow, config) => {
     chatWindowElement.style.display = "flex";
     if (launcherWrapper) launcherWrapper.style.display = "none";
     closeChatButton.style.display = "none";
+    isChatOpen = true;
     setTimeout(() => {
       scrollToBottom();
     }, 100);
@@ -86,6 +89,11 @@ const initializeChat = (chatWindow, config) => {
 
     chatWindowElement.style.display = "flex";
     if (launcherWrapper) launcherWrapper.style.display = "none";
+    isChatOpen = true;
+
+    // Clear unread messages when chat is opened
+    unreadMessageCount = 0;
+    updateNotificationBadge();
 
     // 🧪 Track chat open for A/B testing
     if (window.__webchatABTest) {
@@ -102,6 +110,7 @@ const initializeChat = (chatWindow, config) => {
     e.stopPropagation();
     chatWindowElement.style.display = "none";
     if (launcherWrapper) launcherWrapper.style.display = "flex";
+    isChatOpen = false;
   });
 
   chatHeader.addEventListener("click", function (event) {
@@ -418,8 +427,33 @@ const initializeChat = (chatWindow, config) => {
     }
   }
 
+  function updateNotificationBadge() {
+    const chatBubble = document.getElementById("chat-bubble");
+    if (!chatBubble) return;
+
+    // Remove existing badge if any
+    const existingBadge = chatBubble.querySelector(".chat-notification-badge");
+    if (existingBadge) {
+      existingBadge.remove();
+    }
+
+    // Add new badge if there are unread messages
+    if (unreadMessageCount > 0) {
+      const badge = document.createElement("span");
+      badge.className = "chat-notification-badge";
+      badge.textContent = unreadMessageCount > 99 ? "99+" : unreadMessageCount;
+      chatBubble.appendChild(badge);
+    }
+  }
+
   function handleMessages(msg) {
     const isUserMessage = isUserSideMessage(msg);
+
+    // Increment unread count for incoming bot messages when chat is closed
+    if (!isUserMessage && !isChatOpen) {
+      unreadMessageCount++;
+      updateNotificationBadge();
+    }
 
     if (msg?.content?.type === "text") {
       console.log("Text message detected:", msg);
@@ -1401,13 +1435,8 @@ function loadedChat() {
   const chatBubble = document.createElement("div");
   chatBubble.id = "chat-bubble";
 
-  // Add notification badge if count > 0
-  if (launcherConfig.notificationCount && launcherConfig.notificationCount > 0) {
-    const badge = document.createElement("span");
-    badge.className = "chat-notification-badge";
-    badge.textContent = launcherConfig.notificationCount;
-    chatBubble.appendChild(badge);
-  }
+  // Note: Notification badge is created dynamically by updateNotificationBadge()
+  // when unread messages arrive
 
   launcherWrapper.appendChild(chatBubble);
   document.body.appendChild(launcherWrapper);
