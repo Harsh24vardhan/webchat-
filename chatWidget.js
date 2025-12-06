@@ -79,8 +79,19 @@ const initializeChat = (chatWindow, config) => {
   }
 
   chatBubble.addEventListener("click", function () {
+    // 🧪 Track launcher click for A/B testing
+    if (window.__webchatABTest) {
+      window.__webchatABTest.logLauncherClick();
+    }
+
     chatWindowElement.style.display = "flex";
     if (launcherWrapper) launcherWrapper.style.display = "none";
+
+    // 🧪 Track chat open for A/B testing
+    if (window.__webchatABTest) {
+      window.__webchatABTest.logChatOpen();
+    }
+
     setTimeout(() => {
       scrollToBottom();
     }, 100);
@@ -1048,6 +1059,11 @@ const initializeChat = (chatWindow, config) => {
         if (!firstMessageSent) {
           hideWelcomePanel();
           firstMessageSent = true;
+
+          // 🧪 Track first message (conversion!) for A/B testing
+          if (window.__webchatABTest) {
+            window.__webchatABTest.logFirstMessage();
+          }
         }
 
         const userMessage = document.createElement("p");
@@ -1345,24 +1361,39 @@ function loadedChat() {
   chatContainer.id = "chat-window";
   document.body.appendChild(chatContainer);
 
-  // ✨ Create the new launcher structure with label and badge
+  // ✨ Initialize A/B Testing
   const config = getConfig();
+  let abTest = null;
+  let launcherConfig = config;
+
+  if (window.WebchatABTesting && config.abTesting?.enabled) {
+    abTest = new window.WebchatABTesting(config);
+    // Get variant-specific configuration
+    const variantConfig = abTest.getLauncherConfig();
+    launcherConfig = { ...config, ...variantConfig };
+    console.log('[Webchat] A/B Testing enabled - Using variant config:', variantConfig);
+  }
+
+  // Make abTest available globally for event tracking
+  window.__webchatABTest = abTest;
+
+  // ✨ Create the new launcher structure with label and badge
   const launcherWrapper = document.createElement("div");
   launcherWrapper.id = "chat-launcher-wrapper";
   launcherWrapper.classList.add("chat-launcher-wrapper");
 
-  // Add launcher type class
-  if (config.launcherType === "bubble") {
+  // Add launcher type class (from A/B test variant or config)
+  if (launcherConfig.launcherType === "bubble") {
     launcherWrapper.classList.add("launcher-type-bubble");
   } else {
     launcherWrapper.classList.add("launcher-type-circle");
   }
 
   // Create label if enabled
-  if (config.showLauncherLabel && config.launcherLabel) {
+  if (launcherConfig.showLauncherLabel && launcherConfig.launcherLabel) {
     const launcherLabel = document.createElement("div");
     launcherLabel.className = "chat-launcher-label";
-    launcherLabel.textContent = config.launcherLabel;
+    launcherLabel.textContent = launcherConfig.launcherLabel;
     launcherWrapper.appendChild(launcherLabel);
   }
 
@@ -1371,10 +1402,10 @@ function loadedChat() {
   chatBubble.id = "chat-bubble";
 
   // Add notification badge if count > 0
-  if (config.notificationCount && config.notificationCount > 0) {
+  if (launcherConfig.notificationCount && launcherConfig.notificationCount > 0) {
     const badge = document.createElement("span");
     badge.className = "chat-notification-badge";
-    badge.textContent = config.notificationCount;
+    badge.textContent = launcherConfig.notificationCount;
     chatBubble.appendChild(badge);
   }
 

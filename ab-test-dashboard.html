@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A/B Test Dashboard - Webchat Widget</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header {
+      background: white;
+      padding: 32px;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      margin-bottom: 32px;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 32px;
+      color: #2d3748;
+      margin-bottom: 8px;
+    }
+
+    .header p {
+      color: #718096;
+      font-size: 16px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+
+    .variant-card {
+      background: white;
+      padding: 28px;
+      border-radius: 16px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .variant-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 5px;
+    }
+
+    .variant-a::before {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .variant-b::before {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+
+    .variant-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+
+    .variant-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #2d3748;
+    }
+
+    .variant-icon {
+      font-size: 32px;
+    }
+
+    .metric {
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .metric:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .metric-label {
+      font-size: 13px;
+      color: #718096;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    .metric-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: #2d3748;
+    }
+
+    .metric-unit {
+      font-size: 18px;
+      color: #a0aec0;
+      font-weight: 500;
+    }
+
+    .winner-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+      color: white;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 8px;
+      box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3);
+    }
+
+    .actions {
+      background: white;
+      padding: 24px;
+      border-radius: 16px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .btn {
+      padding: 14px 28px;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+    }
+
+    .btn-secondary {
+      background: #e2e8f0;
+      color: #2d3748;
+    }
+
+    .btn-secondary:hover {
+      background: #cbd5e0;
+      transform: translateY(-2px);
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #fc8181 0%, #f56565 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(252, 129, 129, 0.4);
+    }
+
+    .btn-danger:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(252, 129, 129, 0.5);
+    }
+
+    .comparison {
+      background: white;
+      padding: 32px;
+      border-radius: 16px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      margin-bottom: 32px;
+    }
+
+    .comparison h2 {
+      font-size: 24px;
+      color: #2d3748;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+    }
+
+    .comparison-item {
+      text-align: center;
+      padding: 20px;
+      background: #f7fafc;
+      border-radius: 12px;
+    }
+
+    .comparison-item strong {
+      display: block;
+      font-size: 32px;
+      color: #2d3748;
+      margin-bottom: 8px;
+    }
+
+    .comparison-item span {
+      color: #718096;
+      font-size: 14px;
+    }
+
+    .no-data {
+      text-align: center;
+      padding: 60px 20px;
+      color: #718096;
+    }
+
+    .no-data h3 {
+      font-size: 24px;
+      margin-bottom: 12px;
+      color: #2d3748;
+    }
+
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 24px;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .actions {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🧪 A/B Test Dashboard</h1>
+      <p>Webchat Widget Launcher Performance</p>
+    </div>
+
+    <div id="results-container">
+      <!-- Results will be injected here -->
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-primary" onclick="refreshResults()">
+        🔄 Refresh Results
+      </button>
+      <button class="btn btn-secondary" onclick="exportCSV()">
+        📥 Export as CSV
+      </button>
+      <button class="btn btn-secondary" onclick="logToConsole()">
+        📊 View Raw Data
+      </button>
+      <button class="btn btn-danger" onclick="confirmClearData()">
+        🗑️ Clear Test Data
+      </button>
+    </div>
+  </div>
+
+  <script src="ab-testing.js"></script>
+  <script src="config.js"></script>
+  <script>
+    let abTest;
+
+    function initializeDashboard() {
+      const config = getConfig();
+      abTest = new WebchatABTesting(config);
+      displayResults();
+    }
+
+    function displayResults() {
+      const results = abTest.getResults();
+      const container = document.getElementById('results-container');
+
+      // Check if there's any data
+      const hasData = results.A.impressions > 0 || results.B.impressions > 0;
+
+      if (!hasData) {
+        container.innerHTML = `
+          <div class="comparison">
+            <div class="no-data">
+              <h3>📭 No Data Yet</h3>
+              <p>Start browsing your website with the webchat widget to collect A/B test data.</p>
+              <p style="margin-top: 12px; font-size: 14px;">Open your website in incognito mode to test both variants.</p>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      const winnerConversion = results.winner.byConversion;
+      const winnerCTR = results.winner.byCTR;
+
+      container.innerHTML = `
+        <div class="comparison">
+          <h2>📊 Quick Comparison</h2>
+          <div class="comparison-grid">
+            <div class="comparison-item">
+              <strong>${results.A.impressions + results.B.impressions}</strong>
+              <span>Total Impressions</span>
+            </div>
+            <div class="comparison-item">
+              <strong>${results.A.clicks + results.B.clicks}</strong>
+              <span>Total Clicks</span>
+            </div>
+            <div class="comparison-item">
+              <strong>${results.A.conversions + results.B.conversions}</strong>
+              <span>Total Conversions</span>
+            </div>
+            <div class="comparison-item">
+              <strong>Variant ${winnerConversion}</strong>
+              <span>Recommended Winner</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="variant-card variant-a">
+            <div class="variant-header">
+              <div class="variant-title">Variant A</div>
+              <div class="variant-icon">💬</div>
+            </div>
+            <p style="color: #718096; margin-bottom: 24px; font-size: 14px;">Bubble Icon (Chat Bubble)</p>
+
+            <div class="metric">
+              <div class="metric-label">Impressions</div>
+              <div class="metric-value">${results.A.impressions}</div>
+            </div>
+
+            <div class="metric">
+              <div class="metric-label">Clicks</div>
+              <div class="metric-value">${results.A.clicks}</div>
+            </div>
+
+            <div class="metric">
+              <div class="metric-label">Click-Through Rate</div>
+              <div class="metric-value">${results.A.ctr}<span class="metric-unit">%</span></div>
+              ${winnerCTR === 'A' ? '<span class="winner-badge">🏆 Best CTR</span>' : ''}
+            </div>
+
+            <div class="metric">
+              <div class="metric-label">Conversions</div>
+              <div class="metric-value">${results.A.conversions}</div>
+            </div>
+
+            <div class="metric">
+              <div class="metric-label">Conversion Rate</div>
+              <div class="metric-value">${results.A.conversionRate}<span class="metric-unit">%</span></div>
+              ${winnerConversion === 'A' ? '<span class="winner-badge">🏆 Winner</span>' : ''}
+            </div>
+
+            <div class="metric">
+              <div class="metric-label">Avg. Time to Conversion</div>
+              <div class="metric-value">${(results.A.avgTimeToConversion / 1000).toFixed(1)}<span class="metric-unit">s</span></div>
+            </div>
+          </div>
+
+          <div class="variant-card variant-b">
+            <div class="variant-header">
+              <div class="variant-title">Variant B</div>
+              <div class="variant-icon">⭕</div>
+            </div>
+            <p style="color: #718096; margin-bottom: 24px; font-size: 14px;">Circle Icon (Company Logo)</p>
+
+            <div class="metric">
+              <div class="metric-label">Impressions</div>
+              <div class="metric-value">${results.B.impressions}</div>
+            </div>
+
+            <div class="metric">
+              <div class="metric-label">Clicks</div>
+              <div class="metric-value">${results.B.clicks}</div>
+            </div>
+
+            <div class="metric">
+              <div class="metric-label">Click-Through Rate</div>
+              <div class="metric-value">${results.B.ctr}<span class="metric-unit">%</span></div>
+              ${winnerCTR === 'B' ? '<span class="winner-badge">🏆 Best CTR</span>' : ''}
+            </div>
+
+            <div class="metric">
+              <div class="metric-label">Conversions</div>
+              <div class="metric-value">${results.B.conversions}</div>
+            </div>
+
+            <div class="metric">
+              <div class="metric-label">Conversion Rate</div>
+              <div class="metric-value">${results.B.conversionRate}<span class="metric-unit">%</span></div>
+              ${winnerConversion === 'B' ? '<span class="winner-badge">🏆 Winner</span>' : ''}
+            </div>
+
+            <div class="metric">
+              <div class="metric-label">Avg. Time to Conversion</div>
+              <div class="metric-value">${(results.B.avgTimeToConversion / 1000).toFixed(1)}<span class="metric-unit">s</span></div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function refreshResults() {
+      displayResults();
+      alert('✅ Results refreshed!');
+    }
+
+    function exportCSV() {
+      const csv = abTest.exportResultsCSV();
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `ab-test-results-${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    }
+
+    function logToConsole() {
+      const results = abTest.getResults();
+      console.log('=== A/B Test Results ===');
+      console.log('Variant A (Bubble):', results.A);
+      console.log('Variant B (Circle):', results.B);
+      console.log('Winner:', results.winner);
+      console.log('Raw metrics:', abTest.getStoredMetrics());
+      alert('📊 Check the browser console for detailed results!');
+    }
+
+    function confirmClearData() {
+      if (confirm('⚠️ Are you sure you want to clear all A/B test data? This cannot be undone.')) {
+        abTest.clearTestData();
+        displayResults();
+        alert('🗑️ Test data cleared successfully!');
+      }
+    }
+
+    // Initialize on page load
+    initializeDashboard();
+  </script>
+</body>
+</html>
