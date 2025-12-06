@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Webchat Widget - Live Demo</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    .demo-header {
+      max-width: 800px;
+      margin: 0 auto 40px;
+      background: white;
+      padding: 32px;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      font-size: 32px;
+      color: #2d3748;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .demo-controls {
+      display: grid;
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .control-group {
+      background: #f7fafc;
+      padding: 20px;
+      border-radius: 12px;
+      border-left: 4px solid #667eea;
+    }
+
+    .control-group h3 {
+      color: #2d3748;
+      margin-bottom: 12px;
+      font-size: 18px;
+    }
+
+    .control-group p {
+      color: #4a5568;
+      margin-bottom: 16px;
+      line-height: 1.6;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      flex: 1;
+      min-width: 150px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+      color: white;
+    }
+
+    .btn-warning {
+      background: linear-gradient(135deg, #f6ad55 0%, #ed8936 100%);
+      color: white;
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #fc8181 0%, #f56565 100%);
+      color: white;
+    }
+
+    .status-box {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      margin-top: 16px;
+      border: 2px solid #e2e8f0;
+    }
+
+    .status-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid #edf2f7;
+    }
+
+    .status-item:last-child {
+      border-bottom: none;
+    }
+
+    .status-label {
+      font-weight: 600;
+      color: #2d3748;
+    }
+
+    .status-value {
+      font-weight: 700;
+      color: #667eea;
+    }
+
+    .badge-large {
+      display: inline-block;
+      background: #ef4444;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 16px;
+      font-size: 18px;
+      font-weight: 700;
+      margin-left: 12px;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    .arrow-pointer {
+      text-align: center;
+      margin-top: 32px;
+      font-size: 48px;
+      animation: bounce 2s ease-in-out infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .instruction {
+      background: #fff5f5;
+      border: 2px dashed #f56565;
+      padding: 20px;
+      border-radius: 12px;
+      margin-top: 24px;
+      text-align: center;
+    }
+
+    .instruction h3 {
+      color: #c53030;
+      margin-bottom: 12px;
+    }
+
+    .instruction p {
+      color: #742a2a;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 768px) {
+      .btn-group {
+        flex-direction: column;
+      }
+      .btn {
+        min-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="demo-header">
+    <h1>🔔 Notification Badge Demo</h1>
+
+    <div class="control-group">
+      <h3>📊 Current Status</h3>
+      <div class="status-box">
+        <div class="status-item">
+          <span class="status-label">Chat Window:</span>
+          <span class="status-value" id="chat-status">Loading...</span>
+        </div>
+        <div class="status-item">
+          <span class="status-label">Unread Messages:</span>
+          <span class="status-value">
+            <span id="unread-count">0</span>
+            <span class="badge-large" id="badge-display" style="display: none;">0</span>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="control-group">
+      <h3>🎮 Quick Actions</h3>
+      <p>Test the notification badge with these buttons:</p>
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="sendMessages(3)">
+          📬 Send 3 Messages
+        </button>
+        <button class="btn btn-success" onclick="sendMessages(1)">
+          📨 Send 1 Message
+        </button>
+        <button class="btn btn-warning" onclick="sendMessages(5)">
+          📮 Send 5 Messages
+        </button>
+        <button class="btn btn-danger" onclick="clearBadge()">
+          🗑️ Clear Badge
+        </button>
+      </div>
+    </div>
+
+    <div class="instruction">
+      <h3>👇 Look at Bottom-Right Corner!</h3>
+      <p>Click "Send 3 Messages" above, then look at the launcher in the bottom-right corner of your screen. You'll see the badge with "3" appear!</p>
+    </div>
+
+    <div class="arrow-pointer">
+      ↘️
+    </div>
+  </div>
+
+  <!-- Load webchat widget -->
+  <script src="config.js"></script>
+
+  <script>
+    // Wait for widget to load
+    setTimeout(() => {
+      console.log('🚀 Widget loaded - Demo ready!');
+
+      // Close chat initially to show badge clearly
+      const chatWindow = document.getElementById('chat-window');
+      if (chatWindow) {
+        chatWindow.style.display = 'none';
+      }
+
+      const launcher = document.getElementById('chat-launcher-wrapper');
+      if (launcher) {
+        launcher.style.display = 'flex';
+      }
+
+      updateStatus();
+    }, 1500);
+
+    function sendMessages(count) {
+      console.log(`📨 Sending ${count} messages...`);
+
+      // Ensure chat is closed
+      const chatWindow = document.getElementById('chat-window');
+      const launcher = document.getElementById('chat-launcher-wrapper');
+
+      if (chatWindow) chatWindow.style.display = 'none';
+      if (launcher) launcher.style.display = 'flex';
+
+      // Simulate messages coming from bot
+      for (let i = 0; i < count; i++) {
+        setTimeout(() => {
+          simulateBotMessage(i + 1);
+        }, i * 300);
+      }
+
+      // Show success message
+      setTimeout(() => {
+        alert(`✅ Sent ${count} messages! Check the bottom-right corner - you should see the badge showing "${count}"`);
+      }, count * 300 + 200);
+    }
+
+    function simulateBotMessage(num) {
+      // Access the internal chat functions
+      const chatBubble = document.getElementById('chat-bubble');
+
+      if (!chatBubble) {
+        console.error('Chat bubble not found');
+        return;
+      }
+
+      // Simulate incrementing unread count
+      // This directly manipulates the badge like real messages would
+      let existingBadge = chatBubble.querySelector('.chat-notification-badge');
+
+      if (!existingBadge) {
+        existingBadge = document.createElement('span');
+        existingBadge.className = 'chat-notification-badge';
+        chatBubble.appendChild(existingBadge);
+      }
+
+      existingBadge.textContent = num;
+      existingBadge.style.display = 'flex';
+
+      console.log(`✅ Message ${num} - Badge updated`);
+      updateStatus();
+    }
+
+    function clearBadge() {
+      const chatBubble = document.getElementById('chat-bubble');
+      if (chatBubble) {
+        const badge = chatBubble.querySelector('.chat-notification-badge');
+        if (badge) {
+          badge.remove();
+        }
+      }
+      updateStatus();
+      alert('🗑️ Badge cleared!');
+    }
+
+    function updateStatus() {
+      const chatWindow = document.getElementById('chat-window');
+      const badge = document.querySelector('.chat-notification-badge');
+
+      const isChatOpen = chatWindow && chatWindow.style.display === 'flex';
+      const count = badge ? badge.textContent : '0';
+
+      document.getElementById('chat-status').textContent = isChatOpen ? 'Open ✅' : 'Closed 🔒';
+      document.getElementById('unread-count').textContent = count;
+
+      const badgeDisplay = document.getElementById('badge-display');
+      if (parseInt(count) > 0) {
+        badgeDisplay.style.display = 'inline-block';
+        badgeDisplay.textContent = count;
+      } else {
+        badgeDisplay.style.display = 'none';
+      }
+    }
+
+    // Update status every 500ms
+    setInterval(updateStatus, 500);
+
+    // Monitor for chat open/close
+    document.addEventListener('click', (e) => {
+      if (e.target.id === 'chat-bubble' || e.target.closest('#chat-bubble')) {
+        setTimeout(() => {
+          clearBadge();
+        }, 100);
+      }
+    });
+
+    console.log('%c🔔 Notification Badge Demo Ready!', 'color: #667eea; font-size: 18px; font-weight: bold;');
+    console.log('%cClick "Send 3 Messages" to see the badge appear with "3" in the bottom-right corner!', 'color: #4a5568; font-size: 14px;');
+  </script>
+</body>
+</html>
