@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Webchat Widget - See Badge "3" Now</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f7fa;
+      padding: 40px 20px;
+    }
+
+    .instructions {
+      max-width: 700px;
+      margin: 0 auto 40px;
+      background: white;
+      padding: 32px;
+      border-radius: 16px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      color: #2d3748;
+      margin-bottom: 20px;
+      font-size: 28px;
+    }
+
+    .step {
+      background: #f7fafc;
+      padding: 20px;
+      margin: 16px 0;
+      border-radius: 12px;
+      border-left: 4px solid #667eea;
+    }
+
+    .step h3 {
+      color: #667eea;
+      margin-bottom: 12px;
+      font-size: 18px;
+    }
+
+    .step p {
+      color: #4a5568;
+      line-height: 1.6;
+      margin-bottom: 8px;
+    }
+
+    .highlight {
+      background: #fef5e7;
+      padding: 16px;
+      border-radius: 8px;
+      border-left: 4px solid #f39c12;
+      margin: 20px 0;
+    }
+
+    .highlight strong {
+      color: #d68910;
+      font-size: 16px;
+    }
+
+    .arrow {
+      text-align: center;
+      font-size: 48px;
+      margin: 20px 0;
+      animation: bounce 2s ease-in-out infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
+    }
+
+    .success {
+      background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+      color: white;
+      padding: 24px;
+      border-radius: 12px;
+      text-align: center;
+      margin: 24px 0;
+    }
+
+    .success h2 {
+      font-size: 24px;
+      margin-bottom: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="instructions">
+    <h1>🔔 Notification Badge Test</h1>
+
+    <div class="success">
+      <h2>✅ Badge "3" Will Appear in 3 Seconds!</h2>
+      <p>Look at the bottom-right corner of your screen</p>
+    </div>
+
+    <div class="step">
+      <h3>📍 Step 1: Wait 3 Seconds</h3>
+      <p>The widget will automatically show a badge with "3" in the bottom-right corner.</p>
+    </div>
+
+    <div class="step">
+      <h3>👀 Step 2: Look Bottom-Right</h3>
+      <p>You'll see: <strong>"Need help? Chat with us 👋"</strong> with a red badge showing <strong>"3"</strong></p>
+    </div>
+
+    <div class="step">
+      <h3>🖱️ Step 3: Click the Launcher</h3>
+      <p>When you click it, the badge will clear (go to 0) and chat will open.</p>
+    </div>
+
+    <div class="highlight">
+      <strong>⚠️ IMPORTANT:</strong> The "3" is NOT hardcoded! This simulates 3 bot messages arriving while chat is closed. In production, the badge will increment as real messages arrive from your bot.
+    </div>
+
+    <div class="arrow">
+      ↘️ Look Here
+    </div>
+  </div>
+
+  <!-- Load webchat widget -->
+  <script src="config.js"></script>
+
+  <script>
+    console.log('🚀 Starting badge test in 3 seconds...');
+
+    // Wait for widget to fully load
+    setTimeout(() => {
+      console.log('✅ Widget loaded - simulating 3 messages...');
+
+      // Get the chat bubble
+      const chatBubble = document.getElementById('chat-bubble');
+
+      if (!chatBubble) {
+        console.error('❌ Chat bubble not found!');
+        alert('Error: Chat bubble not found. Make sure config.js and chatWidget.js are loaded.');
+        return;
+      }
+
+      // Ensure chat is closed
+      const chatWindow = document.getElementById('chat-window');
+      if (chatWindow) {
+        chatWindow.style.display = 'none';
+      }
+
+      const launcher = document.getElementById('chat-launcher-wrapper');
+      if (launcher) {
+        launcher.style.display = 'flex';
+      }
+
+      // Simulate 3 messages arriving (incrementing badge)
+      let count = 0;
+      const interval = setInterval(() => {
+        count++;
+
+        // Remove existing badge
+        const existingBadge = chatBubble.querySelector('.chat-notification-badge');
+        if (existingBadge) {
+          existingBadge.remove();
+        }
+
+        // Create new badge with count
+        const badge = document.createElement('span');
+        badge.className = 'chat-notification-badge';
+        badge.textContent = count;
+        chatBubble.appendChild(badge);
+
+        console.log(`📨 Message ${count} received - Badge updated to: ${count}`);
+
+        // Stop after 3 messages
+        if (count >= 3) {
+          clearInterval(interval);
+          console.log('🎉 SUCCESS! Badge now shows "3" - look at bottom-right corner!');
+
+          // Show alert
+          setTimeout(() => {
+            alert('✅ SUCCESS!\n\nThe badge with "3" is now visible in the bottom-right corner.\n\nThis is how it works:\n• Bot sends message 1 → Badge shows "1"\n• Bot sends message 2 → Badge shows "2"\n• Bot sends message 3 → Badge shows "3"\n\nClick the launcher to see the badge clear!');
+          }, 500);
+        }
+      }, 1000); // 1 second between each message
+
+    }, 3000); // Wait 3 seconds for widget to load
+  </script>
+</body>
+</html>
