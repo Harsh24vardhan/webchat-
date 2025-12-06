@@ -14,7 +14,7 @@ const config = {
   launcherType: "circle", // Options: "circle" or "bubble" (overridden if A/B testing enabled)
   launcherLabel: "Need help? Chat with us 👋", // Text label for the launcher
   showLauncherLabel: true, // Show/hide the label
-  notificationCount: 0, // Set to 0 to hide badge, or any number to show
+  notificationCount: 0, // DEPRECATED: Badge now updates automatically based on unread messages
 
   // 🧪 A/B Testing Configuration
   abTesting: {
